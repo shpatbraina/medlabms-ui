@@ -1,32 +1,73 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view/>
-  </div>
+  <v-app id="inspire">
+    <side-menu v-if="loaded"/>
+
+    <bar-menu v-if="loaded"/>
+
+    <v-main app>
+      <v-container fluid >
+        <router-view v-if="loaded"/>
+      </v-container>
+    </v-main>
+
+    <v-footer app>
+      <!-- -->
+    </v-footer>
+  </v-app>
 </template>
 
-<style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-
-#nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
+<script>
+import SideMenu from "@/components/SideMenu";
+import BarMenu from "@/components/BarMenu";
+import axios from "axios";
+import Vue from "vue";
+import store from "./store";
+export default {
+  components: {BarMenu, SideMenu},
+  computed: {
+    loaded() {
+      return this.$store.state.loadState == "loaded";
     }
+  },
+  beforeCreate(){
+    axios.interceptors.request.use(
+        config => {
+          const token = this.$store.state.user.accessToken;
+          if (token) {
+            config.headers['Authorization'] = 'Bearer ' + token;
+          }
+          return config;
+        },
+        error => {
+          Promise.reject(error)
+        });
+
+    axios({
+      method: 'GET',
+      url: 'http://localhost:8764/session',
+      headers: {
+        'Content-type': 'application/json'
+      }
+    }).then(success => {
+            localStorage.setItem("permissions", JSON.stringify(success.data));
+            this.$store.commit("setLoaded");
+          });
+  },
+  beforeMount() {
+
+    Vue.directive('can', {
+      inserted: function (el, binding, vnode) {
+
+        const handler = (permissions) => {
+          let json = JSON.parse(permissions);
+          let permission = json[binding.expression];
+          if (permission !== true) {
+            vnode.elm.style.display = "none";
+          }
+        };
+        handler(localStorage.getItem("permissions"));
+      }
+    });
   }
 }
-</style>
+</script>

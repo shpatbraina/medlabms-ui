@@ -1,4 +1,4 @@
-# medicalcardui
+# medlabmsui
 
 ## Project setup
 ```
