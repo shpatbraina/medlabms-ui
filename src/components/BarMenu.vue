@@ -45,8 +45,7 @@ export default {
     menus: [
       { title: 'Account Settings', icon: 'mdi-account-cog-outline', to: '/about'},
       { title: 'Logout', icon: 'mdi-logout', to: '/logout' },
-    ],
-    loggedUser: "SB"
+    ]
   })
 }
 </script>

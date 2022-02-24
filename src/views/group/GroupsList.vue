@@ -30,21 +30,18 @@ import axios from 'axios'
 import Datatable from "@/components/DataTable";
 
 export default {
-  name: 'ListUser',
+  name: 'ListGroup',
   components: {Datatable},
   data () {
     return {
       alert: false,
       errorAlert:false,
       message:"",
-      pageName: 'Users',
+      pageName: 'Groups',
       headers:[
         { text: 'Id', align: 'start', value: 'id'},
-        { text: 'First Name', value: 'firstName' },
-        { text: 'Last Name', value: 'lastName' },
-        { text: 'Username', value: 'username' },
-        { text: 'Email', value: 'email' },
-        { text: 'Group', value: 'groupName' },
+        { text: 'Group Name', value: 'name' },
+        { text: 'Path', value: 'path' },
         { text: 'Actions', value: 'actions', sortable: false}
       ]
     }
@@ -52,7 +49,7 @@ export default {
   methods: {
     fetchData(itemsPerPage, pageNumber) {
       return axios
-          .get("http://localhost:8081/users?size=" +
+          .get("http://localhost:8081/groups?size=" +
                   itemsPerPage +
                   "&page=" +
                   pageNumber
@@ -60,7 +57,7 @@ export default {
     },
     editData(item){
       this.$router.push({
-        name: "EditUser",
+        name: "EditGroup",
         params: {
           item: item
         }
@@ -68,8 +65,8 @@ export default {
     },
     deleteData(item){
       return axios
-          .delete("http://localhost:8081/users/" + item.id).then(response => {
-            this.showAlert("User deleted successfully!");
+          .delete("http://localhost:8081/groups/" + item.id).then(response => {
+            this.showAlert("Group deleted successfully!");
           })
           .catch(error => {
             console.log("error!");
@@ -96,10 +93,10 @@ export default {
     },
   },
   mounted() {
-    if(this.$route.params.alert !== null && this.$route.params.alert === "userRegistered") {
+    if(this.$route.params.alert !== null && this.$route.params.alert === "groupRegistered") {
       this.showAlert(this.$route.params.message);
     }
-    else if(this.$route.params.errorAlert !== null && this.$route.params.errorAlert === "userNotRegistered") {
+    else if(this.$route.params.errorAlert !== null && this.$route.params.errorAlert === "groupNotRegistered") {
       this.showErrorAlert(this.$route.params.message);
     }
     else {

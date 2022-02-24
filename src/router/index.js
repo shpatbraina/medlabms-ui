@@ -25,6 +25,22 @@ const routes = [
     }
   },
   {
+    path: '/groups/add',
+    name: 'AddGroup',
+    meta: {
+      permissions: ['addGroups']
+    },
+    component: () => import('../views/group/AddGroup.vue')
+  },
+  {
+    path: '/groups',
+    name: 'Groups',
+    meta: {
+      permissions: ['readGroups']
+    },
+    component: () => import('../views/group/GroupsList.vue')
+  },
+  {
     path: '/users/add',
     name: 'AddUser',
     meta: {
@@ -33,8 +49,16 @@ const routes = [
     component: () => import('../views/user/AddUser.vue')
   },
   {
-    path: '/users/list',
-    name: 'ListUser',
+    path: '/users/edit',
+    name: 'EditUser',
+    meta: {
+      permissions: ['addUsers']
+    },
+    component: () => import('../views/user/EditUser.vue')
+  },
+  {
+    path: '/users',
+    name: 'Users',
     meta: {
       permissions: ['readUsers']
     },
@@ -49,8 +73,8 @@ const routes = [
     component: () => import('../views/patient/AddPatient.vue')
   },
   {
-    path: '/patients/list',
-    name: 'ListPatients',
+    path: '/patients',
+    name: 'Patients',
     meta: {
       permissions: ['readPatients']
     },

@@ -22,7 +22,25 @@
         :search="search"
         :footer-props="footerProps"
         class="elevation-1"
-    ></v-data-table>
+    >
+      <template v-slot:[`item.actions`]="{ item }">
+        <v-icon small class="mr-2" @click="editData(item)">mdi-pencil</v-icon>
+        <v-icon small @click="openDeleteDialog(item)">mdi-delete</v-icon>
+      </template>
+      <template v-slot:top>
+        <v-dialog v-model="deleteDialog" max-width="500px">
+          <v-card>
+            <v-card-title class="text-h5">Are you sure you want to delete item with id: {{itemToDelete.id}} ?</v-card-title>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="blue darken-1" text @click="closeDelete">Cancel</v-btn>
+              <v-btn color="blue darken-1" text @click="confirmDelete">OK</v-btn>
+              <v-spacer></v-spacer>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+      </template>
+    </v-data-table>
   </v-card>
 </template>
 
@@ -36,8 +54,10 @@ export default {
       totalPages: 0,
       data: [],
       loading: true,
+      deleteDialog: false,
+      itemToDelete: Object,
       footerProps: {
-        'items-per-page-options': [5, 10, 15, 100, -1],
+        'items-per-page-options': [1, 2, 5, 10, 15, 100, -1],
         'show-current-page': true,
         'show-first-last-page': true,
       },
@@ -52,13 +72,11 @@ export default {
   watch: {
     options: {
       handler() {
-        console.log("watch");
         this.readDataFromAPI();
       },
     },
     search: {
       handler() {
-        console.log("search watch");
         this.readDataFromSearchAPI();
       }
     },
@@ -92,8 +110,8 @@ export default {
             .then((response) => {
               //Then injecting the result to datatable parameters.
               this.loading = false;
-              items = response.data.data;
-              const totalRows = response.data.totalPassengers;
+              items = response.data.content;
+              const totalRows = response.data.totalElements;
               const totalPages = response.data.totalPages;
 
               if (sortBy.length === 1 && sortDesc.length === 1) {
@@ -101,9 +119,9 @@ export default {
                   const sortA = a[sortBy[0]]
                   const sortB = b[sortBy[0]]
                   if (sortDesc[0]) {
-                    return sortB.toLowerCase().localeCompare(sortA.toLowerCase());
+                    return sortB.toString().toLowerCase().localeCompare(sortA.toString().toLowerCase());
                   } else {
-                    return sortA.toLowerCase().localeCompare(sortB.toLowerCase());
+                    return sortA.toString().toLowerCase().localeCompare(sortB.toString().toLowerCase());
                   }
                 })
               }
@@ -117,9 +135,35 @@ export default {
             .catch((error) => console.log(error.message));
       });
     },
+    openDeleteDialog(item)  {
+      this.deleteDialog = true;
+      this.itemToDelete = item;
+    },
+    closeDelete() {
+      this.deleteDialog = false;
+    },
+    confirmDelete() {
+      this.deleteData(this.itemToDelete).then(() => {
+        this.readDataFromAPI();
+        this.deleteDialog = false;
+        this.itemToDelete = '';
+      });
+    }
   },
   props: {
     fetchData: {
+      type: Function,
+      default(e) {
+        console.log('Please override this method!')
+      }
+    },
+    editData: {
+      type: Function,
+      default(e) {
+        console.log('Please override this method!')
+      }
+    },
+    deleteData: {
       type: Function,
       default(e) {
         console.log('Please override this method!')
@@ -136,7 +180,7 @@ export default {
       default(e) {
         console.log('Please override this string!')
       }
-    },
+    }
   }
 }
 </script>

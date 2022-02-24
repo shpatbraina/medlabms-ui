@@ -8,7 +8,7 @@
         class="pa-6 mx-2">
       {{message}}
     </v-alert>
-    <h2>Add User</h2>
+    <h2>Edit User</h2>
     <v-form
         ref="form"
         v-model="valid"
@@ -47,7 +47,7 @@
           v-model="select"
           :items="groups"
           item-text="name"
-          item-value="path"
+          item-value="name"
           :rules="[v => !!v || 'Group is required']"
           label="Group"
           required
@@ -59,7 +59,7 @@
           class="mr-4"
           @click="submit"
       >
-        Add
+        Save
       </v-btn>
 
       <v-btn
@@ -67,7 +67,7 @@
           class="mr-4"
           @click="reset"
       >
-        Clear
+        Cancel
       </v-btn>
     </v-form>
   </div>
@@ -78,11 +78,12 @@
 import axios from "axios";
 
 export default {
-  name: 'AddUser',
+  name: 'EditUser',
   components: {},
   data: () => ({
     errorAlert: false,
-    message:'',
+    message: '',
+    item: Object,
     valid: true,
     firstName: '',
     lastName: '',
@@ -110,24 +111,38 @@ export default {
   }),
   mounted() {
     this.fetchGroups();
+    this.item = this.$route.params.item;
+    this.firstName = this.item.firstName;
+    this.lastName = this.item.lastName;
+    this.username = this.item.username;
+    this.email = this.item.email;
+    this.select = { name: this.item.groupName, path: "/"+this.item.groupName };
   },
   methods: {
     submit () {
       if(this.$refs.form.validate()) {
         let data = {
+          "id": this.item.id,
           "firstName": this.firstName,
           "lastName": this.lastName,
           "username": this.username,
           "email": this.email,
           "groups": [this.select]
         };
-        axios.post("http://localhost:8081/users", data)
+        if(this.select.name != null) {
+          console.log("test");
+          console.log(data.groups)
+          data.groups = [this.select.name];
+        }
+        console.log(data);
+        console.log(data.groups);
+        axios.put("http://localhost:8081/users/"+this.item.id, data)
         .then(response => {
             this.$router.push({
               name: "Users",
               params: {
-                alert: "userRegistered",
-                message: "User added successfully!"
+                alert: "userEdited",
+                message: "User edited successfully!"
               }
             });
         })
@@ -149,5 +164,6 @@ export default {
           });
     },
   },
+
 }
 </script>

@@ -5,10 +5,38 @@
   >
     <v-list>
       <v-list-item>
-        <v-img src="/Logo.png"></v-img>
+        <v-img src="/Logo.png" :max-height="64" ></v-img>
       </v-list-item>
 
       <v-divider></v-divider>
+
+      <v-list-group
+          prepend-icon="mdi-account-circle-outline"
+          v-can="readGroups"
+      >
+        <template v-slot:activator>
+          <v-list-item-content>
+            <v-list-item-title>Groups</v-list-item-title>
+          </v-list-item-content>
+        </template>
+
+        <v-list-item
+            v-for="group in groups"
+            :key="group.title"
+            :to="group.to"
+            v-can=group.permissionKey
+            link
+            class="px-6"
+        >
+
+          <v-list-item-icon>
+            <v-icon v-text="group.icon"></v-icon>
+          </v-list-item-icon>
+
+          <v-list-item-title v-text="group.title"></v-list-item-title>
+
+        </v-list-item>
+      </v-list-group>
 
       <v-list-group
           prepend-icon="mdi-account-circle-outline"
@@ -24,6 +52,7 @@
             v-for="user in users"
             :key="user.title"
             :to="user.to"
+            v-can="user.permissionKey"
             link
             class="px-6"
         >
@@ -51,6 +80,7 @@
             v-for="patient in patients"
             :key="patient.title"
             :to="patient.to"
+            v-can="patient.permissionKey"
             link
             class="px-6"
         >
@@ -73,15 +103,20 @@
   export default {
     name: 'SideMenu',
     data: () => ({
-      readUsers: false,
-      readPatients: false,
+      readGroups: "readGroups",
+      readUsers: "readUsers",
+      readPatients: "readPatients",
+      groups: [
+        { title: 'Add', icon: 'mdi-plus-outline', to: '/groups/add', permissionKey: "addGroups" },
+        { title: 'List', icon: 'mdi-view-list-outline', to: '/groups', permissionKey: "readGroups" },
+      ],
       users: [
-        { title: 'Add', icon: 'mdi-plus-outline', to: '/users/add' },
-        { title: 'List', icon: 'mdi-view-list-outline', to: '/users/list' },
+        { title: 'Add', icon: 'mdi-plus-outline', to: '/users/add', permissionKey: "addUsers" },
+        { title: 'List', icon: 'mdi-view-list-outline', to: '/users', permissionKey: "readUsers" },
       ],
       patients: [
-        { title: 'Add', icon: 'mdi-plus-outline', to: '/patients/add' },
-        { title: 'List', icon: 'mdi-view-list-outline', to: '/patients/list' },
+        { title: 'Add', icon: 'mdi-plus-outline', to: '/patients/add', permissionKey: "addPatients" },
+        { title: 'List', icon: 'mdi-view-list-outline', to: '/patients', permissionKey: "readPatients" },
       ]
     })
   }

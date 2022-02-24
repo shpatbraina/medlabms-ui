@@ -44,7 +44,7 @@ export default {
 
     axios({
       method: 'GET',
-      url: 'http://localhost:8764/session',
+      url: 'http://localhost:8081/session',
       headers: {
         'Content-type': 'application/json'
       }
@@ -60,7 +60,7 @@ export default {
 
         const handler = (permissions) => {
           let json = JSON.parse(permissions);
-          let permission = json[binding.expression];
+          let permission = json[binding.value];
           if (permission !== true) {
             vnode.elm.style.display = "none";
           }
