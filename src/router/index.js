@@ -33,6 +33,14 @@ const routes = [
     component: () => import('../views/group/AddGroup.vue')
   },
   {
+    path: '/groups/edit',
+    name: 'EditGroup',
+    meta: {
+      permissions: ['addGroups']
+    },
+    component: () => import('../views/group/EditGroup.vue')
+  },
+  {
     path: '/groups',
     name: 'Groups',
     meta: {

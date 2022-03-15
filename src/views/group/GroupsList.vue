@@ -69,8 +69,7 @@ export default {
             this.showAlert("Group deleted successfully!");
           })
           .catch(error => {
-            console.log("error!");
-            console.log(error);
+            this.showErrorAlert(error.response.data);
           });
     },
     showAlert(message){
@@ -92,7 +91,7 @@ export default {
       this.errorAlert = false;
     },
   },
-  mounted() {
+  created() {
     if(this.$route.params.alert !== null && this.$route.params.alert === "groupRegistered") {
       this.showAlert(this.$route.params.message);
     }

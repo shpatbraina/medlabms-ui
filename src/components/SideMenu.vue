@@ -23,7 +23,7 @@
         <v-list-item
             v-for="group in groups"
             :key="group.title"
-            :to="group.to"
+            @click="navigateTo(group.to)"
             v-can=group.permissionKey
             link
             class="px-6"
@@ -51,7 +51,7 @@
         <v-list-item
             v-for="user in users"
             :key="user.title"
-            :to="user.to"
+            @click="navigateTo(user.to)"
             v-can="user.permissionKey"
             link
             class="px-6"
@@ -79,7 +79,7 @@
         <v-list-item
             v-for="patient in patients"
             :key="patient.title"
-            :to="patient.to"
+            @click="navigateTo(patient.to)"
             v-can="patient.permissionKey"
             link
             class="px-6"
@@ -118,6 +118,11 @@
         { title: 'Add', icon: 'mdi-plus-outline', to: '/patients/add', permissionKey: "addPatients" },
         { title: 'List', icon: 'mdi-view-list-outline', to: '/patients', permissionKey: "readPatients" },
       ]
-    })
+    }),
+    methods: {
+      navigateTo(path){
+        this.$router.push({path: path}).catch(err => {});
+      }
+    }
   }
 </script>

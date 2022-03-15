@@ -72,7 +72,6 @@ export default {
             this.showAlert("User deleted successfully!");
           })
           .catch(error => {
-            console.log("error!");
             console.log(error);
           });
     },
@@ -95,7 +94,7 @@ export default {
       this.errorAlert = false;
     },
   },
-  mounted() {
+  created() {
     if(this.$route.params.alert !== null && this.$route.params.alert === "userRegistered") {
       this.showAlert(this.$route.params.message);
     }

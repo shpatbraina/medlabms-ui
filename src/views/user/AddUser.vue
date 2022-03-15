@@ -47,7 +47,7 @@
           v-model="select"
           :items="groups"
           item-text="name"
-          item-value="path"
+          item-value="id"
           :rules="[v => !!v || 'Group is required']"
           label="Group"
           required
@@ -119,7 +119,7 @@ export default {
           "lastName": this.lastName,
           "username": this.username,
           "email": this.email,
-          "groups": [this.select]
+          "groupId": [this.select][0]
         };
         axios.post("http://localhost:8081/users", data)
         .then(response => {

@@ -47,7 +47,7 @@
           v-model="select"
           :items="groups"
           item-text="name"
-          item-value="name"
+          item-value="id"
           :rules="[v => !!v || 'Group is required']"
           label="Group"
           required
@@ -65,7 +65,7 @@
       <v-btn
           color="error"
           class="mr-4"
-          @click="reset"
+          @click="cancel"
       >
         Cancel
       </v-btn>
@@ -116,32 +116,27 @@ export default {
     this.lastName = this.item.lastName;
     this.username = this.item.username;
     this.email = this.item.email;
-    this.select = { name: this.item.groupName, path: "/"+this.item.groupName };
+    // this.select = { id: this.item.groupId };
+    this.select = this.item.groupId;
   },
   methods: {
     submit () {
       if(this.$refs.form.validate()) {
         let data = {
           "id": this.item.id,
+          "kcId": this.item.kcId,
           "firstName": this.firstName,
           "lastName": this.lastName,
           "username": this.username,
           "email": this.email,
-          "groups": [this.select]
+          "groupId": [this.select][0]
         };
-        if(this.select.name != null) {
-          console.log("test");
-          console.log(data.groups)
-          data.groups = [this.select.name];
-        }
-        console.log(data);
-        console.log(data.groups);
         axios.put("http://localhost:8081/users/"+this.item.id, data)
         .then(response => {
             this.$router.push({
               name: "Users",
               params: {
-                alert: "userEdited",
+                alert: "userRegistered",
                 message: "User edited successfully!"
               }
             });
@@ -152,8 +147,10 @@ export default {
         });
       }
     },
-    reset () {
-      this.$refs.form.reset()
+    cancel () {
+      this.$router.push({
+        name: "Users"
+      });
     },
     fetchGroups() {
       axios

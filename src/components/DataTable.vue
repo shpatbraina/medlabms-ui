@@ -132,7 +132,7 @@ export default {
                 totalPages
               })
             })
-            .catch((error) => console.log(error.message));
+            .catch((error) => error.message);
       });
     },
     openDeleteDialog(item)  {

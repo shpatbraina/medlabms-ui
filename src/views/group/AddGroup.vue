@@ -27,6 +27,7 @@
           v-model="groupName"
           :rules="groupNameRules"
           label="Group Name"
+          :readonly="!readOnlyPermissions"
           required
       ></v-text-field>
 
@@ -34,10 +35,10 @@
           v-model="select"
           :items="permissions"
           item-text="name"
-          item-value="id"
+          item-value="name"
           label="Permissions"
           multiple
-          :readonly="activePermissions"
+          :readonly="readOnlyPermissions"
           chips
       ></v-combobox>
 
@@ -47,15 +48,15 @@
           class="mr-4"
           @click="submit"
       >
-        Add
+        {{ saveButtonText }}
       </v-btn>
 
       <v-btn
           color="error"
           class="mr-4"
-          @click="reset"
+          @click="cancel"
       >
-        Clear
+        Cancel
       </v-btn>
     </v-form>
   </div>
@@ -73,50 +74,28 @@ export default {
     successAlert: false,
     message: '',
     valid: true,
-    activePermissions: false,
+    readOnlyPermissions: true,
+    saveButtonText: 'Save Group',
     groupId: '',
     groupName: '',
     groupNameRules: [
       v => !!v || 'Group name is required',
-      v => (v && v.length > 3) || 'Group name length must be at least 3 characters',
+      v => (v && v.length >= 3) || 'Group name length must be at least 3 characters',
     ],
     select: null,
     permissions: [],
     checkbox: false,
   }),
-  mounted() {
-    // this.fetchPermissions();
-  },
   methods: {
     submit() {
       if (this.$refs.form.validate()) {
-        let data = {
-          "name": this.groupName
-        };
-        axios.post("http://localhost:8081/groups", data)
-            .then(response => {
-              // this.$router.push({
-              //   name: "Groups",
-              //   params: {
-              //     alert: "groupRegistered",
-              //     message: "Group added successfully!"
-              //   }
-              // });
-              this.groupId = response.data.id;
-              this.fetchPermissions(response.data.id);
-              this.activePermissions = true;
-              this.successAlert = true;
-              this.message = "Group added successfully.";
-              console.log(response.data.id);
-            })
-            .catch(error => {
-              this.errorAlert = true;
-              this.message = error.response.data.errorMessage;
-            });
+        this.readOnlyPermissions ? this.saveGroup() : this.savePermissions();
       }
     },
-    reset() {
-      this.$refs.form.reset()
+    cancel() {
+      this.$router.push({
+        name: "Groups"
+      });
     },
     fetchPermissions(id) {
       axios
@@ -124,16 +103,40 @@ export default {
         this.permissions = response.data;
       });
     },
-    submitPermissions() {
-      axios.put("http://localhost:8081/groups/roles/" + this.groupId, this.permissions)
+    saveGroup() {
+      let data = {
+        "name": this.groupName
+      };
+      axios.post("http://localhost:8081/groups", data)
           .then(response => {
-            this.$router.push({
-              name: "Groups",
-              params: {
-                alert: "groupRegistered",
-                message: "Group added successfully with permissions!"
-              }
-            });
+            if(response.status === 200) {
+              this.groupId = response.data.id;
+              this.fetchPermissions(response.data.id);
+              this.readOnlyPermissions = false;
+              this.saveButtonText = "Save Permissions";
+              this.successAlert = true;
+              this.message = "Group added successfully.";
+            }
+          })
+          .catch(error => {
+            this.errorAlert = true;
+            this.message = error.response.data.errorMessage;
+          });
+    },
+    savePermissions() {
+      axios.put("http://localhost:8081/groups/roles/" + this.groupId, this.select)
+          .then(response => {
+            if(response.status === 200) {
+              this.$router.push({
+                name: "Groups",
+                params: {
+                  alert: "groupRegistered",
+                  message: "Group added successfully!"
+                }
+              });
+            } else {
+              throw new Error(response.data.toString());
+            }
           }).catch(reason => {
         this.errorAlert = true;
         this.message = reason.response.data.errorMessage;

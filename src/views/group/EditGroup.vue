@@ -6,9 +6,17 @@
         transition="fade-transition"
         :value="errorAlert"
         class="pa-6 mx-2">
-      {{message}}
+      {{ message }}
     </v-alert>
-    <h2>Edit User</h2>
+    <v-alert
+        elevation="20"
+        type="success"
+        transition="fade-transition"
+        :value="successAlert"
+        class="pa-6 mx-2">
+      {{ message }}
+    </v-alert>
+    <h2>Edit Group</h2>
     <v-form
         ref="form"
         v-model="valid"
@@ -16,42 +24,21 @@
         class="col-6 align-content-center"
     >
       <v-text-field
-          v-model="firstName"
-          :rules="firstNameRules"
-          label="First Name"
+          v-model="groupName"
+          :rules="groupNameRules"
+          label="Group Name"
           required
       ></v-text-field>
 
-      <v-text-field
-          v-model="lastName"
-          :rules="lastNameRules"
-          label="Last Name"
-          required
-      ></v-text-field>
-
-      <v-text-field
-          v-model="username"
-          :rules="usernameRules"
-          label="Username"
-          required
-      ></v-text-field>
-
-      <v-text-field
-          v-model="email"
-          :rules="emailRules"
-          label="E-mail"
-          required
-      ></v-text-field>
-
-      <v-select
+      <v-combobox
           v-model="select"
-          :items="groups"
+          :items="permissions"
           item-text="name"
           item-value="name"
-          :rules="[v => !!v || 'Group is required']"
-          label="Group"
-          required
-      ></v-select>
+          label="Permissions"
+          multiple
+          chips
+      ></v-combobox>
 
       <v-btn
           :disabled="!valid"
@@ -59,13 +46,13 @@
           class="mr-4"
           @click="submit"
       >
-        Save
+        {{ saveButtonText }}
       </v-btn>
 
       <v-btn
           color="error"
           class="mr-4"
-          @click="reset"
+          @click="cancel"
       >
         Cancel
       </v-btn>
@@ -78,92 +65,93 @@
 import axios from "axios";
 
 export default {
-  name: 'EditUser',
+  name: 'EditGroup',
   components: {},
   data: () => ({
     errorAlert: false,
+    successAlert: false,
     message: '',
     item: Object,
     valid: true,
-    firstName: '',
-    lastName: '',
-    username: '',
-    firstNameRules: [
-      v => !!v || 'First name is required',
-      v => /[a-zA-Z]+$/.test(v) || 'First name should contain only letters',
-    ],
-    lastNameRules: [
-      v => !!v || 'Last Name is required',
-      v => /[a-zA-Z]+$/.test(v) || 'Last name should contain only letters',
-    ],
-    usernameRules: [
-      v => !!v || 'Username is required',
-      v => (v && v.length > 3) || 'Username length must be at least 3 characters',
-    ],
-    email: '',
-    emailRules: [
-      v => !!v || 'E-mail is required',
-      v => /.+@.+\..+/.test(v) || 'E-mail must be valid',
+    saveButtonText: 'Update Group',
+    groupId: '',
+    groupName: '',
+    groupNameRules: [
+      v => !!v || 'Group name is required',
+      v => (v && v.length >= 3) || 'Group name length must be at least 3 characters',
     ],
     select: null,
-    groups: [],
+    permissions: [],
     checkbox: false,
   }),
+  beforeMount() {
+  },
   mounted() {
-    this.fetchGroups();
     this.item = this.$route.params.item;
-    this.firstName = this.item.firstName;
-    this.lastName = this.item.lastName;
-    this.username = this.item.username;
-    this.email = this.item.email;
-    this.select = { name: this.item.groupName, path: "/"+this.item.groupName };
+    this.groupId = this.item.id;
+    this.groupName = this.item.name;
+    this.fetchAvailablePermissions(this.item.id);
   },
   methods: {
-    submit () {
-      if(this.$refs.form.validate()) {
-        let data = {
-          "id": this.item.id,
-          "firstName": this.firstName,
-          "lastName": this.lastName,
-          "username": this.username,
-          "email": this.email,
-          "groups": [this.select]
-        };
-        if(this.select.name != null) {
-          console.log("test");
-          console.log(data.groups)
-          data.groups = [this.select.name];
-        }
-        console.log(data);
-        console.log(data.groups);
-        axios.put("http://localhost:8081/users/"+this.item.id, data)
-        .then(response => {
-            this.$router.push({
-              name: "Users",
-              params: {
-                alert: "userEdited",
-                message: "User edited successfully!"
-              }
-            });
-        })
-        .catch(error => {
-          this.errorAlert = true;
-          this.message = error.response.data.errorMessage;
-        });
+    submit() {
+      if (this.$refs.form.validate()) {
+        this.saveGroup();
       }
     },
-    reset () {
-      this.$refs.form.reset()
+    cancel () {
+      this.$router.push({
+        name: "Groups"
+      });
     },
-    fetchGroups() {
+    fetchAvailablePermissions(id) {
       axios
-          .get(
-              "http://localhost:8081/groups"
-          ).then(response => {
-            this.groups = response.data;
+          .get("http://localhost:8081/groups/availableRoles/" + id)
+          .then(response => {
+            this.permissions = response.data;
+            this.fetchEffectivePermissions(this.item.id);
           });
     },
+    fetchEffectivePermissions(id) {
+      axios
+          .get("http://localhost:8081/groups/effectiveRoles/" + id)
+          .then(response => {
+            this.permissions = this.permissions.concat(response.data);
+            this.select = response.data;
+          });
+    },
+    saveGroup() {
+      let data = {
+        "name": this.groupName
+      };
+      axios.put("http://localhost:8081/groups/" + this.item.id, data)
+          .then(response => {
+            if (response.status === 200) {
+              this.groupId = response.data.id;
+              this.savePermissions();
+            }
+          })
+          .catch(error => {
+            console.log(error);
+            this.errorAlert = true;
+            this.message = error.response.data.errorMessage;
+          });
+    },
+    savePermissions() {
+      axios.put("http://localhost:8081/groups/roles/" + this.groupId, this.select)
+          .then(response => {
+            this.$router.push({
+              name: "Groups",
+              params: {
+                alert: "groupRegistered",
+                message: "Group updated successfully!"
+              }
+            });
+          }).catch(reason => {
+        console.log(reason);
+        this.errorAlert = true;
+        this.message = reason.response.data.errorMessage;
+      })
+    }
   },
-
 }
 </script>
