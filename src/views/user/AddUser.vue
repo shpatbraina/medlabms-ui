@@ -133,7 +133,7 @@ export default {
         })
         .catch(error => {
           this.errorAlert = true;
-          this.message = error.response.data.errorMessage;
+          this.message = error.response.data.errorMessage != null ? error.response.data.errorMessage : error.response.data;
         });
       }
     },
