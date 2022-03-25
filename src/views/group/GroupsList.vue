@@ -39,7 +39,7 @@ export default {
       message:"",
       pageName: 'Groups',
       headers:[
-        { text: 'Id', align: 'start', value: 'id'},
+        { text: 'Id', value: 'id', align: 'start'},
         { text: 'Group Name', value: 'name' },
         { text: 'Path', value: 'path' },
         { text: 'Actions', value: 'actions', sortable: false}
@@ -69,7 +69,7 @@ export default {
             this.showAlert("Group deleted successfully!");
           })
           .catch(error => {
-            this.showErrorAlert(error.response.data);
+            this.showErrorAlert(error.response.data.errorMessage);
           });
     },
     showAlert(message){

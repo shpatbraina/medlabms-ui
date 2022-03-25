@@ -9,7 +9,7 @@
           class="pa-6 mx-2">
         {{ message }}
       </v-alert>
-      <h2>Edit User</h2>
+      <h2>Edit analysis</h2>
       <v-form
           ref="form"
           v-model="valid"
@@ -17,30 +17,37 @@
           class="col-6 align-content-center"
       >
         <v-text-field
-            v-model="firstName"
-            :rules="firstNameRules"
+            v-model="name"
+            :rules="nameRules"
             label="First Name"
             required
         ></v-text-field>
 
         <v-text-field
-            v-model="lastName"
-            :rules="lastNameRules"
-            label="Last Name"
-            required
+            v-model="description"
+            label="Description"
         ></v-text-field>
 
         <v-text-field
-            v-model="username"
-            :rules="usernameRules"
-            label="Username"
+            v-model="metric"
+            :rules="metricRules"
+            label="Metric"
             required
         ></v-text-field>
 
+        <v-textarea
+            v-model="metricRange"
+            :rules="metricRangeRules"
+            label="Metric ranges"
+            required
+            clearable
+            clear-icon="mdi-close-circle"
+        ></v-textarea>
+
         <v-text-field
-            v-model="email"
-            :rules="emailRules"
-            label="E-mail"
+            v-model="price"
+            :rules="priceRules"
+            label="Price"
             required
         ></v-text-field>
 
@@ -60,7 +67,7 @@
             class="mr-4"
             @click="submit"
         >
-          Save
+          Add
         </v-btn>
 
         <v-btn
@@ -80,88 +87,85 @@
 import axios from "axios";
 
 export default {
-  name: 'EditUser',
+  name: 'EditAnalyses',
   components: {},
   data: () => ({
     errorAlert: false,
     message: '',
     item: Object,
     valid: true,
-    firstName: '',
-    lastName: '',
-    username: '',
-    firstNameRules: [
-      v => !!v || 'First name is required',
-      v => /[a-zA-Z]+$/.test(v) || 'First name should contain only letters',
-    ],
-    lastNameRules: [
-      v => !!v || 'Last Name is required',
-      v => /[a-zA-Z]+$/.test(v) || 'Last name should contain only letters',
-    ],
-    usernameRules: [
-      v => !!v || 'Username is required',
-      v => (v && v.length > 3) || 'Username length must be at least 3 characters',
-    ],
-    email: '',
-    emailRules: [
-      v => !!v || 'E-mail is required',
-      v => /.+@.+\..+/.test(v) || 'E-mail must be valid',
-    ],
+    name: '',
+    description: null,
+    metric: null,
+    metricRange: null,
+    price: null,
     select: null,
     groups: [],
-    checkbox: false,
+    nameRules: [
+      v => !!v || 'Name is required',
+      v => /[a-zA-Z]+$/.test(v) || 'Name should contain only letters',
+    ],
+    metricRules: [
+      v => !!v || 'Metric is required'
+    ],
+    metricRangeRules: [
+      v => !!v || 'Metric ranges is required'
+    ],
+    priceRules: [
+      v => !!v || 'Price is required',
+      v => /^(\d*([.,](?=\d{1}))?\d+)?$/.test(v) || 'Price should contain only contain decimal numbers',
+    ]
   }),
   mounted() {
     this.fetchGroups();
     this.item = this.$route.params.item;
-    this.firstName = this.item.firstName;
-    this.lastName = this.item.lastName;
-    this.username = this.item.username;
-    this.email = this.item.email;
-    this.select = this.item.groupId;
+    this.name = this.item.name;
+    this.description = this.item.description;
+    this.metric = this.item.metric;
+    this.metricRange = this.item.metricRange;
+    this.price = this.item.price;
+    this.select = this.item.analysisGroupId;
   },
   methods: {
     submit() {
       if (this.$refs.form.validate()) {
         let data = {
-          "id": this.item.id,
-          "kcId": this.item.kcId,
-          "firstName": this.firstName,
-          "lastName": this.lastName,
-          "username": this.username,
-          "email": this.email,
-          "groupId": [this.select][0]
+          "name": this.name,
+          "description": this.description,
+          "metric": this.metric,
+          "metricRange": this.metricRange,
+          "price": this.price,
+          "analysisGroupId": [this.select][0]
         };
-        axios.put("http://localhost:8081/users/" + this.item.id, data)
+        axios.put("http://localhost:8081/analyses/" + this.item.id, data)
             .then(response => {
               this.$router.push({
-                name: "Users",
+                name: "Analyses",
                 params: {
-                  alert: "userRegistered",
-                  message: "User edited successfully!"
+                  alert: "analysesRegistered",
+                  message: "Analyses edited successfully!"
                 }
               });
             })
             .catch(error => {
               this.errorAlert = true;
-              this.message = error.response.data.errorMessage;
+              this.message = error.response.data.errorMessage != null ? error.response.data.errorMessage : error.response.data;
             });
       }
     },
     cancel() {
       this.$router.push({
-        name: "Users"
+        name: "Analyses"
       });
     },
     fetchGroups() {
       axios
           .get(
-              "http://localhost:8081/groups"
+              "http://localhost:8081/analysesGroups"
           ).then(response => {
         this.groups = response.data;
       });
     },
   },
-
 }
 </script>

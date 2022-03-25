@@ -81,12 +81,68 @@ const routes = [
     component: () => import('../views/patient/AddPatient.vue')
   },
   {
+    path: '/patients/edit',
+    name: 'EditPatient',
+    meta: {
+      permissions: ['addPatients']
+    },
+    component: () => import('../views/patient/EditPatient.vue')
+  },
+  {
     path: '/patients',
     name: 'Patients',
     meta: {
       permissions: ['readPatients']
     },
     component: () => import('../views/patient/PatientsList.vue')
+  },
+  {
+    path: '/analysesGroups/add',
+    name: 'AddAnalysesGroups',
+    meta: {
+      permissions: ['addAnalysesGroups']
+    },
+    component: () => import('../views/analysesGroup/AddAnalysesGroup.vue')
+  },
+  {
+    path: '/analysesGroups/edit',
+    name: 'EditAnalysesGroups',
+    meta: {
+      permissions: ['addAnalysesGroups']
+    },
+    component: () => import('../views/analysesGroup/EditAnalysesGroup.vue')
+  },
+  {
+    path: '/analysesGroups',
+    name: 'AnalysesGroups',
+    meta: {
+      permissions: ['readAnalysesGroups']
+    },
+    component: () => import('../views/analysesGroup/AnalysesGroupsList.vue')
+  },
+  {
+    path: '/analysis/add',
+    name: 'AddAnalysis',
+    meta: {
+      permissions: ['addAnalyses']
+    },
+    component: () => import('../views/analysis/AddAnalysis.vue')
+  },
+  {
+    path: '/analysis/edit',
+    name: 'EditAnalysis',
+    meta: {
+      permissions: ['addAnalyses']
+    },
+    component: () => import('../views/analysis/EditAnalysis.vue')
+  },
+  {
+    path: '/analysis',
+    name: 'Analyses',
+    meta: {
+      permissions: ['readAnalyses']
+    },
+    component: () => import('../views/analysis/AnalysesList.vue')
   }
 ]
 

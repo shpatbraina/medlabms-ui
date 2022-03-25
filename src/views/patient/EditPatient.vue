@@ -9,7 +9,7 @@
           class="pa-6 mx-2">
         {{ message }}
       </v-alert>
-      <h2>Add Patient</h2>
+      <h2>Edit Patient</h2>
       <v-form
           ref="form"
           v-model="valid"
@@ -150,9 +150,9 @@
         <v-btn
             color="error"
             class="mr-4"
-            @click="reset"
+            @click="cancel"
         >
-          Clear
+          Cancel
         </v-btn>
       </v-form>
     </v-card>
@@ -164,11 +164,12 @@
 import axios from "axios";
 
 export default {
-  name: 'AddPatient',
+  name: 'EditPatient',
   components: {},
   data: () => ({
     errorAlert: false,
     message: '',
+    item: Object,
     valid: true,
     firstName: '',
     lastName: '',
@@ -215,7 +216,19 @@ export default {
       this.birthDateFormatted = this.formatDate(this.birthDate);
     },
   },
-  mounted() {},
+  mounted() {
+    this.item = this.$route.params.item;
+    this.firstName = this.item.firstName;
+    this.lastName = this.item.lastName;
+    this.birthDate = this.item.birthDate;
+    this.birthPlace = this.item.birthPlace;
+    this.gender = this.item.gender;
+    this.bloodType = this.item.bloodType;
+    this.bloodTypeRh = this.item.bloodTypeRh;
+    this.personalId = this.item.personalId;
+    this.phone = this.item.phone;
+    this.email = this.item.email;
+  },
   methods: {
     submit() {
       if (this.$refs.form.validate()) {
@@ -231,13 +244,13 @@ export default {
           "email": this.email,
           "phone": this.phone
         };
-        axios.post("http://localhost:8081/patients", data)
+        axios.put("http://localhost:8081/patients/" + this.item.id, data)
             .then(response => {
               this.$router.push({
                 name: "Patients",
                 params: {
                   alert: "patientRegistered",
-                  message: "Patient added successfully!"
+                  message: "Patient edited successfully!"
                 }
               });
             })
@@ -247,8 +260,10 @@ export default {
             });
       }
     },
-    reset() {
-      this.$refs.form.reset()
+    cancel() {
+      this.$router.push({
+        name: "Patients"
+      });
     },
     formatDate(date) {
       if (!date) return null

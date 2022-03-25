@@ -39,7 +39,7 @@ export default {
       message:"",
       pageName: 'Users',
       headers:[
-        { text: 'Id', align: 'start', value: 'id'},
+        { text: 'Id', value: 'id', align: 'start'},
         { text: 'First Name', value: 'firstName' },
         { text: 'Last Name', value: 'lastName' },
         { text: 'Username', value: 'username' },

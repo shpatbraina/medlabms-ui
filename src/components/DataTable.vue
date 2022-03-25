@@ -1,5 +1,5 @@
 <template>
-  <v-card class="col-5 pa-6 mx-2">
+  <v-card class="col-5 pa-6">
     <v-card-title>
       {{pageName}}
       <v-spacer></v-spacer>
@@ -75,10 +75,7 @@ export default {
         this.readDataFromAPI();
       },
     },
-    search: {
-      handler() {
-        this.readDataFromSearchAPI();
-      }
+    search() {
     },
     deep: true,
   },

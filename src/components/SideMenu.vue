@@ -2,6 +2,7 @@
   <v-navigation-drawer
       permanent
       app
+      width="300"
   >
     <v-list>
       <v-list-item>
@@ -11,7 +12,7 @@
       <v-divider></v-divider>
 
       <v-list-group
-          prepend-icon="mdi-account-circle-outline"
+          prepend-icon="mdi-account-group-outline"
           v-can="readGroups"
       >
         <template v-slot:activator>
@@ -93,6 +94,63 @@
 
         </v-list-item>
       </v-list-group>
+
+      <v-list-group
+          prepend-icon="medical-icon-i-medical-records"
+          v-can="readAnalysesGroups"
+      >
+        <template v-slot:activator>
+          <v-list-item-content>
+            <v-list-item-title>Analyses Groups</v-list-item-title>
+          </v-list-item-content>
+        </template>
+
+        <v-list-item
+            v-for="analysesGroup in analysesGroups"
+            :key="analysesGroup.title"
+            @click="navigateTo(analysesGroup.to)"
+            v-can="analysesGroup.permissionKey"
+            link
+            class="px-6"
+        >
+
+          <v-list-item-icon>
+            <v-icon v-text="analysesGroup.icon"></v-icon>
+          </v-list-item-icon>
+
+          <v-list-item-title v-text="analysesGroup.title"></v-list-item-title>
+
+        </v-list-item>
+      </v-list-group>
+
+      <v-list-group
+          prepend-icon="medical-icon-i-laboratory"
+          v-can="readAnalyses"
+      >
+        <template v-slot:activator>
+          <v-list-item-content>
+            <v-list-item-title>Analyses</v-list-item-title>
+          </v-list-item-content>
+        </template>
+
+        <v-list-item
+            v-for="analysis in analyses"
+            :key="analysis.title"
+            @click="navigateTo(analysis.to)"
+            v-can="analysis.permissionKey"
+            link
+            class="px-6"
+        >
+
+          <v-list-item-icon>
+            <v-icon v-text="analysis.icon"></v-icon>
+          </v-list-item-icon>
+
+          <v-list-item-title v-text="analysis.title"></v-list-item-title>
+
+        </v-list-item>
+      </v-list-group>
+
     </v-list>
 
     <v-divider></v-divider>
@@ -106,6 +164,8 @@
       readGroups: "readGroups",
       readUsers: "readUsers",
       readPatients: "readPatients",
+      readAnalysesGroups: "readAnalysesGroups",
+      readAnalyses: "readAnalyses",
       groups: [
         { title: 'Add', icon: 'mdi-plus-outline', to: '/groups/add', permissionKey: "addGroups" },
         { title: 'List', icon: 'mdi-view-list-outline', to: '/groups', permissionKey: "readGroups" },
@@ -117,6 +177,14 @@
       patients: [
         { title: 'Add', icon: 'mdi-plus-outline', to: '/patients/add', permissionKey: "addPatients" },
         { title: 'List', icon: 'mdi-view-list-outline', to: '/patients', permissionKey: "readPatients" },
+      ],
+      analysesGroups: [
+        { title: 'Add', icon: 'mdi-plus-outline', to: '/analysesGroups/add', permissionKey: "addAnalysesGroups" },
+        { title: 'List', icon: 'mdi-view-list-outline', to: '/analysesGroups', permissionKey: "readAnalysesGroups" },
+      ],
+      analyses: [
+        { title: 'Add', icon: 'mdi-plus-outline', to: '/analysis/add', permissionKey: "addAnalyses" },
+        { title: 'List', icon: 'mdi-view-list-outline', to: '/analysis', permissionKey: "readAnalyses" },
       ]
     }),
     methods: {

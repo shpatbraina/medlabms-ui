@@ -5,6 +5,7 @@ import store from './store'
 import vuetify from './plugins/vuetify'
 import * as Keycloak from 'keycloak-js'
 import VueLogger from 'vuejs-logger'
+import './assets/css/wfmi-style.css'
 
 Vue.config.productionTip = false
 

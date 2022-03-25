@@ -9,7 +9,7 @@
           class="pa-6 mx-2">
         {{ message }}
       </v-alert>
-      <h2>Add User</h2>
+      <h2>Add Analysis</h2>
       <v-form
           ref="form"
           v-model="valid"
@@ -17,30 +17,37 @@
           class="col-6 align-content-center"
       >
         <v-text-field
-            v-model="firstName"
-            :rules="firstNameRules"
-            label="First Name"
+            v-model="name"
+            :rules="nameRules"
+            label="Name"
             required
         ></v-text-field>
 
         <v-text-field
-            v-model="lastName"
-            :rules="lastNameRules"
-            label="Last Name"
-            required
+            v-model="description"
+            label="Description"
         ></v-text-field>
 
         <v-text-field
-            v-model="username"
-            :rules="usernameRules"
-            label="Username"
+            v-model="metric"
+            :rules="metricRules"
+            label="Metric"
             required
         ></v-text-field>
 
+        <v-textarea
+            v-model="metricRange"
+            :rules="metricRangeRules"
+            label="Metric ranges"
+            required
+            clearable
+            clear-icon="mdi-close-circle"
+        ></v-textarea>
+
         <v-text-field
-            v-model="email"
-            :rules="emailRules"
-            label="E-mail"
+            v-model="price"
+            :rules="priceRules"
+            label="Price"
             required
         ></v-text-field>
 
@@ -80,35 +87,33 @@
 import axios from "axios";
 
 export default {
-  name: 'AddUser',
+  name: 'AddAnalysis',
   components: {},
   data: () => ({
     errorAlert: false,
     message: '',
     valid: true,
-    firstName: '',
-    lastName: '',
-    username: '',
-    firstNameRules: [
-      v => !!v || 'First name is required',
-      v => /[a-zA-Z]+$/.test(v) || 'First name should contain only letters',
-    ],
-    lastNameRules: [
-      v => !!v || 'Last Name is required',
-      v => /[a-zA-Z]+$/.test(v) || 'Last name should contain only letters',
-    ],
-    usernameRules: [
-      v => !!v || 'Username is required',
-      v => (v && v.length > 3) || 'Username length must be at least 3 characters',
-    ],
-    email: '',
-    emailRules: [
-      v => !!v || 'E-mail is required',
-      v => /.+@.+\..+/.test(v) || 'E-mail must be valid',
-    ],
+    name: '',
+    description: null,
+    metric: null,
+    metricRange: null,
+    price: null,
     select: null,
     groups: [],
-    checkbox: false,
+    nameRules: [
+      v => !!v || 'Name is required',
+      v => /[a-zA-Z]+$/.test(v) || 'Name should contain only letters',
+    ],
+    metricRules: [
+      v => !!v || 'Metric is required'
+    ],
+    metricRangeRules: [
+      v => !!v || 'Metric ranges is required'
+    ],
+    priceRules: [
+      v => !!v || 'Price is required',
+      v => /^(\d*([.,](?=\d{1}))?\d+)?$/.test(v) || 'Price should contain only contain decimal numbers',
+    ]
   }),
   mounted() {
     this.fetchGroups();
@@ -117,19 +122,20 @@ export default {
     submit() {
       if (this.$refs.form.validate()) {
         let data = {
-          "firstName": this.firstName,
-          "lastName": this.lastName,
-          "username": this.username,
-          "email": this.email,
-          "groupId": [this.select][0]
+          "name": this.name,
+          "description": this.description,
+          "metric": this.metric,
+          "metricRange": this.metricRange,
+          "price": this.price,
+          "analysisGroupId": [this.select][0]
         };
-        axios.post("http://localhost:8081/users", data)
+        axios.post("http://localhost:8081/analyses", data)
             .then(response => {
               this.$router.push({
-                name: "Users",
+                name: "Analyses",
                 params: {
-                  alert: "userRegistered",
-                  message: "User added successfully!"
+                  alert: "analysesRegistered",
+                  message: "Analysis added successfully!"
                 }
               });
             })
@@ -145,7 +151,7 @@ export default {
     fetchGroups() {
       axios
           .get(
-              "http://localhost:8081/groups"
+              "http://localhost:8081/analysesGroups"
           ).then(response => {
         this.groups = response.data;
       });
