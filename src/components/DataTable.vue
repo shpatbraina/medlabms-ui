@@ -1,15 +1,38 @@
 <template>
   <v-card class="col-5 pa-6">
     <v-card-title>
-      {{pageName}}
-      <v-spacer></v-spacer>
-      <v-text-field
-          v-model="search"
-          append-icon="mdi-magnify"
-          label="Search"
-          single-line
-          hide-details
-      ></v-text-field>
+<!--      <div style="position: absolute; top: 10px; bottom: 30px; left: 10px">-->
+      <div class="pb-sm-16">
+        {{ pageName }}
+      </div>
+      <v-row class="ma-1">
+        <v-select
+            v-model="select"
+            :items="filterableHeaders"
+            item-text="text"
+            :item-value="item=>item"
+            label="Filter"
+            required
+            @change=""
+        ></v-select>
+        <v-spacer></v-spacer>
+        <v-select
+            v-if="select != null && select.value === selectInput && active"
+            v-model="selectValue"
+            :items="selectInputValues"
+            item-text="text"
+            item-value="value"
+            label="Filter"
+        ></v-select>
+        <v-text-field
+            v-if="select != null && select.value !== selectInput && active"
+            v-model="search"
+            append-icon="mdi-magnify"
+            label="Search"
+            single-line
+            hide-details
+        ></v-text-field>
+      </v-row>
     </v-card-title>
     <v-data-table
         :page="page"
@@ -23,6 +46,12 @@
         :footer-props="footerProps"
         class="elevation-1"
     >
+      <template v-slot:[`item.birthDate`]="{ item }">
+        <span>{{ formatDate(item.birthDate) }}</span>
+      </template>
+      <template v-slot:[`item.dateOfVisit`]="{ item }">
+        <span>{{ formatDate(item.dateOfVisit) }}</span>
+      </template>
       <template v-slot:[`item.actions`]="{ item }">
         <v-icon small class="mr-2" @click="editData(item)">mdi-pencil</v-icon>
         <v-icon small @click="openDeleteDialog(item)">mdi-delete</v-icon>
@@ -30,7 +59,8 @@
       <template v-slot:top>
         <v-dialog v-model="deleteDialog" max-width="500px">
           <v-card>
-            <v-card-title class="text-h5">Are you sure you want to delete item with id: {{itemToDelete.id}} ?</v-card-title>
+            <v-card-title class="text-h5">Are you sure you want to delete item with id: {{ itemToDelete.id }} ?
+            </v-card-title>
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn color="blue darken-1" text @click="closeDelete">Cancel</v-btn>
@@ -47,11 +77,15 @@
 <script>
 export default {
   name: 'Datatable',
-  data () {
+  data() {
     return {
       page: 0,
       totalRows: 0,
       totalPages: 0,
+      totalElements: 0,
+      select: null,
+      selectValue: null,
+      active: false,
       data: [],
       loading: true,
       deleteDialog: false,
@@ -76,6 +110,13 @@ export default {
       },
     },
     search() {
+      this.readDataFromAPI();
+    },
+    selectValue() {
+      this.readDataFromAPI();
+    },
+    select() {
+      this.active = this.select.active;
     },
     deep: true,
   },
@@ -87,23 +128,21 @@ export default {
         this.totalRows = data.totalRows
         this.totalPages = data.totalPages
         this.loading = false
-      });
-    },
-    readDataFromSearchAPI() {
-      this.loading = true;
-      this.sortData().then(data => {
-        this.data = data.items
-        this.totalRows = data.totalRows
-        this.totalPages = data.totalPages
-        this.loading = false
+        this.search = ''
       });
     },
     sortData() {
       return new Promise((resolve, reject) => {
-        const { sortBy, sortDesc, page, itemsPerPage } = this.options;
+        const {sortBy, sortDesc, page, itemsPerPage} = this.options;
+        console.log(sortBy);
+        let sortHeaderIndex = this.filterableHeaders.findIndex(value => value.hValue === sortBy[0]);
+        console.log(sortHeaderIndex);
+        let sort = sortHeaderIndex !== -1 ? this.filterableHeaders[sortHeaderIndex].value : null;
+        console.log(sort);
         let pageNumber = page > 0 ? page - 1 : 0;
+        let value = this.search !== '' ? this.search : this.selectValue;
         let items;
-        this.fetchData(itemsPerPage, pageNumber)
+        this.fetchData(itemsPerPage, pageNumber, sort, sortDesc, this.select != null ? this.select.value : null, value)
             .then((response) => {
               //Then injecting the result to datatable parameters.
               this.loading = false;
@@ -132,7 +171,7 @@ export default {
             .catch((error) => error.message);
       });
     },
-    openDeleteDialog(item)  {
+    openDeleteDialog(item) {
       this.deleteDialog = true;
       this.itemToDelete = item;
     },
@@ -145,7 +184,13 @@ export default {
         this.deleteDialog = false;
         this.itemToDelete = '';
       });
-    }
+    },
+    formatDate(date) {
+      if (!date) return null
+
+      const [year, month, day] = date.split('-')
+      return `${day}/${month}/${year}`
+    },
   },
   props: {
     fetchData: {
@@ -167,6 +212,24 @@ export default {
       }
     },
     headers: {
+      type: Array,
+      default(e) {
+        console.log('Please override this array!')
+      }
+    },
+    filterableHeaders: {
+      type: Array,
+      default(e) {
+        console.log('Please override this array!')
+      }
+    },
+    selectInput: {
+      type: String,
+      default(e) {
+        console.log('Please override this string!')
+      }
+    },
+    selectInputValues: {
       type: Array,
       default(e) {
         console.log('Please override this array!')

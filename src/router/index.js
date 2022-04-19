@@ -143,6 +143,30 @@ const routes = [
       permissions: ['readAnalyses']
     },
     component: () => import('../views/analysis/AnalysesList.vue')
+  },
+  {
+    path: '/visit/add',
+    name: 'AddVisit',
+    meta: {
+      permissions: ['addVisits']
+    },
+    component: () => import('../views/visit/AddVisit.vue')
+  },
+  {
+    path: '/visit/edit',
+    name: 'EditVisit',
+    meta: {
+      permissions: ['addVisits']
+    },
+    component: () => import('../views/visit/EditVisit.vue')
+  },
+  {
+    path: '/visit',
+    name: 'Visits',
+    meta: {
+      permissions: ['readVisits']
+    },
+    component: () => import('../views/visit/VisitsList.vue')
   }
 ]
 

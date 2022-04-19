@@ -55,6 +55,7 @@
           <v-date-picker
               v-model="birthDate"
               @input="birthDateMenu = false"
+              :allowed-dates="(date1) => date1 <= new Date().toISOString().substr(0, 10)"
           ></v-date-picker>
         </v-menu>
 

@@ -99,12 +99,6 @@ export default {
       this.alert = false;
       this.errorAlert = false;
     },
-    formatDate(date) {
-      if (!date) return null
-
-      const [year, month, day] = date.split('-')
-      return `${day}/${month}/${year}`
-    },
   },
   created() {
     if (this.$route.params.alert !== null && this.$route.params.alert === "patientRegistered") {
