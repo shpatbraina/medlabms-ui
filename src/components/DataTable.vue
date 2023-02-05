@@ -1,12 +1,12 @@
 <template>
-  <v-card class="col-5 pa-6">
+  <v-card class="">
     <v-card-title>
-<!--      <div style="position: absolute; top: 10px; bottom: 30px; left: 10px">-->
-      <div class="pb-sm-16">
+      <div>
         {{ pageName }}
       </div>
-      <v-row class="ma-1">
+      <v-row class="mx-6">
         <v-select
+            v-if="filterableHeaders != null"
             v-model="select"
             :items="filterableHeaders"
             item-text="text"
@@ -15,7 +15,7 @@
             required
             @change=""
         ></v-select>
-        <v-spacer></v-spacer>
+        <v-spacer class="mx-6"></v-spacer>
         <v-select
             v-if="select != null && select.value === selectInput && active"
             v-model="selectValue"
@@ -52,7 +52,11 @@
       <template v-slot:[`item.dateOfVisit`]="{ item }">
         <span>{{ formatDate(item.dateOfVisit) }}</span>
       </template>
+      <template v-slot:[`item.date`]="{ item }">
+        <span>{{ formatDateTime(item.date) }}</span>
+      </template>
       <template v-slot:[`item.actions`]="{ item }">
+          <v-icon v-if="resetPasswordAction" small class="mr-2" @click="resetPassword(item)">mdi-lock-reset</v-icon>
         <v-icon small class="mr-2" @click="editData(item)">mdi-pencil</v-icon>
         <v-icon small @click="openDeleteDialog(item)">mdi-delete</v-icon>
       </template>
@@ -117,6 +121,9 @@ export default {
     },
     select() {
       this.active = this.select.active;
+      if(this.select.value==="none"){
+        this.readDataFromAPI();
+      }
     },
     deep: true,
   },
@@ -128,17 +135,13 @@ export default {
         this.totalRows = data.totalRows
         this.totalPages = data.totalPages
         this.loading = false
-        this.search = ''
       });
     },
     sortData() {
       return new Promise((resolve, reject) => {
         const {sortBy, sortDesc, page, itemsPerPage} = this.options;
-        console.log(sortBy);
-        let sortHeaderIndex = this.filterableHeaders.findIndex(value => value.hValue === sortBy[0]);
-        console.log(sortHeaderIndex);
-        let sort = sortHeaderIndex !== -1 ? this.filterableHeaders[sortHeaderIndex].value : null;
-        console.log(sort);
+        let sortHeaderIndex = this.filterableHeaders != null ? this.filterableHeaders.findIndex(value => value.hValue === sortBy[0]) : -1;
+        let sort = sortHeaderIndex !== -1 && this.filterableHeaders[sortHeaderIndex].sortable ? this.filterableHeaders[sortHeaderIndex].value : null;
         let pageNumber = page > 0 ? page - 1 : 0;
         let value = this.search !== '' ? this.search : this.selectValue;
         let items;
@@ -185,11 +188,13 @@ export default {
         this.itemToDelete = '';
       });
     },
-    formatDate(date) {
+    formatDateTime(date) {
       if (!date) return null
 
       const [year, month, day] = date.split('-')
-      return `${day}/${month}/${year}`
+      const [d, time] = day.split('T')
+      const [hour, minutes, seconds] = time.split(':')
+      return `${d}/${month}/${year} ${hour}:${minutes}`
     },
   },
   props: {
@@ -197,6 +202,18 @@ export default {
       type: Function,
       default(e) {
         console.log('Please override this method!')
+      }
+    },
+    resetPassword: {
+      type: Function,
+      default(e) {
+        console.log('Please override this method for reset password!')
+      }
+    },
+    resetPasswordAction: {
+      type: Boolean,
+      default(e) {
+        console.log('Please override this boolean for reset password!')
       }
     },
     editData: {

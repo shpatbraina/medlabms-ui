@@ -21,6 +21,11 @@
                :deleteData="deleteData"
                :headers="headers"
                :page-name="pageName"
+               :filterable-headers="filterableHeaders"
+               :select-input="selectInput"
+               :select-input-values="groups"
+               :reset-password="resetPassword"
+               :reset-password-action="resetPasswordAction"
     />
   </div>
 </template>
@@ -38,6 +43,9 @@ export default {
       errorAlert:false,
       message:"",
       pageName: 'Users',
+      selectInput: "groupId",
+      resetPasswordAction: true,
+      groups: [],
       headers:[
         { text: 'Id', value: 'id', align: 'start'},
         { text: 'First Name', value: 'firstName' },
@@ -46,17 +54,59 @@ export default {
         { text: 'Email', value: 'email' },
         { text: 'Group', value: 'groupName' },
         { text: 'Actions', value: 'actions', sortable: false}
+      ],
+      filterableHeaders: [
+        {text: 'None', value: 'none', disabled: false, active: false, align: 'start'},
+        {text: 'First Name', value: 'firstName', hValue: 'firstName', sortable: true, disabled: false, active: true},
+        {text: 'Last Name', value: 'lastName', hValue: 'lastName', sortable: true, disabled: false, active: true},
+        {text: 'Username', value: 'username', hValue: 'username', sortable: true, disabled: false, active: true},
+        {text: 'Email', value: 'email', hValue: 'email', sortable: true, disabled: false, active: true},
+        {text: 'Group', value: 'groupId', hValue: 'groupName', sortable: true, disabled: false, active: true},
+        {text: 'Id', value: 'id', hValue: 'id', sortable: true, disabled: true},
       ]
     }
   },
   methods: {
-    fetchData(itemsPerPage, pageNumber) {
+    fetchData(itemsPerPage, pageNumber, sortBy, sortDesc, select, search) {
+      let searchVal = search !== null ? search : '';
       return axios
           .get("http://localhost:8081/users?size=" +
-                  itemsPerPage +
-                  "&page=" +
-                  pageNumber
+              itemsPerPage +
+              "&page=" +
+              pageNumber +
+              "&sortBy=" +
+              sortBy +
+              "&sortDesc=" +
+              sortDesc +
+              "&filterBy=" +
+              select +
+              "&search=" +
+              searchVal
           );
+    },
+    fetchGroups() {
+      axios
+          .get(
+              "http://localhost:8081/groups"
+          ).then(response => {
+        response.data.forEach(value => {
+          let temp = {
+            "text": value.name,
+            "value": value.id
+          };
+          this.groups.push(temp);
+        });
+      });
+    },
+    resetPassword(item){
+      console.log(item);
+      return axios
+          .put("http://localhost:8081/users/resetPassword/" + item.id).then(response => {
+            this.showAlert("User password reset successfully!");
+          })
+          .catch(error => {
+            console.log(error);
+          });
     },
     editData(item){
       this.$router.push({
@@ -104,6 +154,9 @@ export default {
     else {
       this.resetAlerts();
     }
+  },
+  mounted() {
+    this.fetchGroups();
   }
 }
 </script>

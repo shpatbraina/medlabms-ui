@@ -22,6 +22,7 @@
                  :deleteData="deleteData"
                  :headers="headers"
                  :page-name="pageName"
+                 :filterable-headers="filterableHeaders"
       />
     </v-container>
   </div>
@@ -45,16 +46,31 @@ export default {
         {text: 'Name', value: 'name'},
         {text: 'Description', value: 'description'},
         {text: 'Actions', value: 'actions', sortable: false}
+      ],
+      filterableHeaders: [
+        {text: 'None', value: 'none', disabled: false, active: false, align: 'start'},
+        {text: 'Name', value: 'name', hValue: 'name', sortable: true, disabled: false, active: true},
+        {text: 'Id', value: 'id', hValue: 'id', sortable: true, disabled: true},
+        {text: 'Description', value: 'description', hValue: 'description', sortable: true, disabled: true},
       ]
     }
   },
   methods: {
-    fetchData(itemsPerPage, pageNumber) {
+    fetchData(itemsPerPage, pageNumber, sortBy, sortDesc, select, search) {
+      let searchVal = search !== null ? search : '';
       return axios
           .get("http://localhost:8081/analysesGroups?size=" +
               itemsPerPage +
               "&page=" +
-              pageNumber
+              pageNumber +
+              "&sortBy=" +
+              sortBy +
+              "&sortDesc=" +
+              sortDesc +
+              "&filterBy=" +
+              select +
+              "&search=" +
+              searchVal
           );
     },
     editData(item) {

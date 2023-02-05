@@ -116,7 +116,7 @@
           </v-btn>
         </v-card-title>
 
-        <v-card-text class="pt-4">
+        <v-card-text class="pt-6">
           <v-row>
             <v-col>ID</v-col>
             <v-col>Name</v-col>
@@ -138,31 +138,27 @@
             <v-list-item>
               <v-row align="center"
                      justify="center">
-                <v-list-item-avatar>
-                  <v-avatar
-                      color="red"
-                      size="56"
-                      class="white--text"
-                  >
-                    {{ item.analysis.id }}
-                  </v-avatar>
-                </v-list-item-avatar>
-                <v-list-item-content>
-                  <v-col align="center"
-                         justify="center">
+                  <v-col >
+                      <v-avatar
+                          color="red"
+                          size="32"
+                          class="white--text"
+                      >
+                        {{ item.analysis.id }}
+                      </v-avatar>
+                  </v-col>
+                  <v-col justify="center" >
                     <v-list-item-content>{{ item.analysis.name }}</v-list-item-content>
                   </v-col>
-                  <v-col align="center"
-                         justify="center">
+                  <v-col justify="center">
                     <v-list-item-content>{{ item.value }}</v-list-item-content>
                   </v-col>
-                  <v-col>
+                  <v-col justify="center">
                     <v-list-item-content>{{ item.analysis.metric }}</v-list-item-content>
                   </v-col>
-                  <v-col>
+                  <v-col justify="center">
                     <v-list-item-content>{{ item.analysis.price }} €</v-list-item-content>
                   </v-col>
-                </v-list-item-content>
                 <v-list-item-action>
                   <v-btn
                       depressed

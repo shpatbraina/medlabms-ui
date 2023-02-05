@@ -46,7 +46,8 @@ export default {
       method: 'GET',
       url: 'http://localhost:8081/session',
       headers: {
-        'Content-type': 'application/json'
+        'Content-type': 'application/json',
+        'Accept': '*/*'
       }
     }).then(success => {
             localStorage.setItem("permissions", JSON.stringify(success.data));

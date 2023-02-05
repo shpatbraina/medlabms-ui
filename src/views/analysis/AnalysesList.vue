@@ -6,7 +6,7 @@
         transition="fade-transition"
         :value="alert"
         class="pa-6 mx-2">
-      {{message}}
+      {{ message }}
     </v-alert>
     <v-alert
         elevation="20"
@@ -14,7 +14,7 @@
         transition="fade-transition"
         :value="errorAlert"
         class="pa-6 mx-2">
-      {{message}}
+      {{ message }}
     </v-alert>
     <v-container>
       <Datatable :fetch-data="fetchData"
@@ -22,6 +22,9 @@
                  :deleteData="deleteData"
                  :headers="headers"
                  :page-name="pageName"
+                 :filterable-headers="filterableHeaders"
+                 :select-input="selectInput"
+                 :select-input-values="groups"
       />
     </v-container>
   </div>
@@ -40,6 +43,8 @@ export default {
       errorAlert: false,
       message: "",
       pageName: 'Analyses',
+      selectInput: "analysisGroupId",
+      groups: [],
       headers: [
         {text: 'Id', value: 'id', align: 'start'},
         {text: 'Name', value: 'name'},
@@ -49,17 +54,50 @@ export default {
         {text: 'Price', value: 'price'},
         {text: 'Group', value: 'analysisGroupName'},
         {text: 'Actions', value: 'actions', sortable: false}
+      ],
+      filterableHeaders: [
+        {text: 'None', value: 'none', disabled: false, active: false, align: 'start'},
+        {text: 'Name', value: 'name', hValue: 'name', sortable: true, disabled: false, active: true},
+        {text: 'Group', value: 'analysisGroupId', hValue: 'analysisGroupName', sortable: true, disabled: false, active: true},
+        {text: 'Id', value: 'id', hValue: 'id', sortable: true, disabled: true},
+        {text: 'Description', value: 'description', hValue: 'description', sortable: true, disabled: true},
+        {text: 'Metric ranges', value: 'metricRange', hValue: 'metricRange', sortable: true, disabled: true},
+        {text: 'Metric', value: 'metric', hValue: 'metric', sortable: true, disabled: true},
+        {text: 'Price', value: 'price', hValue: 'price', sortable: true, disabled: true},
       ]
     }
   },
   methods: {
-    fetchData(itemsPerPage, pageNumber) {
+    fetchData(itemsPerPage, pageNumber, sortBy, sortDesc, select, search) {
+      let searchVal = search !== null ? search : '';
       return axios
           .get("http://localhost:8081/analyses?size=" +
               itemsPerPage +
               "&page=" +
-              pageNumber
+              pageNumber +
+              "&sortBy=" +
+              sortBy +
+              "&sortDesc=" +
+              sortDesc +
+              "&filterBy=" +
+              select +
+              "&search=" +
+              searchVal
           );
+    },
+    fetchGroups() {
+      axios
+          .get(
+              "http://localhost:8081/analysesGroups"
+          ).then(response => {
+        response.data.forEach(value => {
+          let temp = {
+            "text": value.name,
+            "value": value.id
+          };
+          this.groups.push(temp);
+        });
+      });
     },
     editData(item) {
       this.$router.push({
@@ -111,6 +149,9 @@ export default {
     } else {
       this.resetAlerts();
     }
+  },
+  mounted() {
+    this.fetchGroups();
   }
 }
 </script>

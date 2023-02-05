@@ -22,6 +22,7 @@
                  :deleteData="deleteData"
                  :headers="headers"
                  :page-name="pageName"
+                 :filterable-headers="filterableHeaders"
       />
     </v-container>
   </div>
@@ -52,16 +53,38 @@ export default {
         {text: 'Phone', value: 'phone'},
         {text: 'Email', value: 'email'},
         {text: 'Actions', value: 'actions', sortable: false}
+      ],
+      filterableHeaders: [
+        {text: 'None', value: 'none', disabled: false, active: false, align: 'start'},
+        {text: 'First Name', value: 'firstName', hValue: 'firstName', sortable: true, disabled: false, active: true},
+        {text: 'Last Name', value: 'lastName', hValue: 'lastName', sortable: true, disabled: false, active: true},
+        {text: 'Personal ID', value: 'personalId', hValue: 'personalId', sortable: true, disabled: false, active: true},
+        {text: 'Id', value: 'id', hValue: 'id', sortable: true, disabled: true},
+        {text: 'Birth Date', value: 'birthDate', hValue: 'birthDate', sortable: true, disabled: true},
+        {text: 'Birth Place', value: 'birthPlace', hValue: 'birthPlace', sortable: true, disabled: true},
+        {text: 'Blood Type', value: 'bloodType', hValue: 'bloodType', sortable: true, disabled: true},
+        {text: 'Blood Type RH', value: 'bloodTypeRh', hValue: 'bloodTypeRh', sortable: true, disabled: true},
+        {text: 'Phone', value: 'phone', hValue: 'phone', sortable: true, disabled: true},
+        {text: 'Email', value: 'email', hValue: 'email', sortable: true, disabled: true},
       ]
     }
   },
   methods: {
-    fetchData(itemsPerPage, pageNumber) {
+    fetchData(itemsPerPage, pageNumber, sortBy, sortDesc, select, search) {
+      let searchVal = search !== null ? search : '';
       return axios
           .get("http://localhost:8081/patients?size=" +
               itemsPerPage +
               "&page=" +
-              pageNumber
+              pageNumber +
+              "&sortBy=" +
+              sortBy +
+              "&sortDesc=" +
+              sortDesc +
+              "&filterBy=" +
+              select +
+              "&search=" +
+              searchVal
           );
     },
     editData(item) {

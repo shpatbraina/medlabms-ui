@@ -82,9 +82,9 @@
         <v-btn
             color="error"
             class="mr-4"
-            @click="reset"
+            @click="cancel"
         >
-          Clear
+          Cancel
         </v-btn>
       </v-form>
     </v-card>
@@ -174,10 +174,10 @@ export default {
             });
       }
     },
-    reset() {
-      this.$refs.form.reset();
-      this.selectedAnalyses = [];
-      this.fetchAnalyses();
+    cancel() {
+      this.$router.push({
+        name: "Visits"
+      });
     },
     formatDate(date) {
       if (!date) return null

@@ -179,6 +179,33 @@
         </v-list-item>
       </v-list-group>
 
+      <v-list-group
+          prepend-icon="medical-icon-i-administration"
+          v-can="readAudits"
+      >
+        <template v-slot:activator>
+          <v-list-item-content>
+            <v-list-item-title>Audits</v-list-item-title>
+          </v-list-item-content>
+        </template>
+
+        <v-list-item
+            v-for="audit in audits"
+            :key="audit.title"
+            @click="navigateTo(audit.to)"
+            v-can="audit.permissionKey"
+            link
+            class="px-6"
+        >
+
+          <v-list-item-icon>
+            <v-icon v-text="audit.icon"></v-icon>
+          </v-list-item-icon>
+
+          <v-list-item-title v-text="audit.title"></v-list-item-title>
+
+        </v-list-item>
+      </v-list-group>
     </v-list>
 
     <v-divider></v-divider>
@@ -195,6 +222,7 @@
       readAnalysesGroups: "readAnalysesGroups",
       readAnalyses: "readAnalyses",
       readVisits: "readVisits",
+      readAudits: "readAudits",
       groups: [
         { title: 'Add', icon: 'mdi-plus-outline', to: '/groups/add', permissionKey: "addGroups" },
         { title: 'List', icon: 'mdi-view-list-outline', to: '/groups', permissionKey: "readGroups" },
@@ -218,6 +246,9 @@
       visits: [
         { title: 'Add', icon: 'mdi-plus-outline', to: '/visit/add', permissionKey: "addVisits" },
         { title: 'List', icon: 'mdi-view-list-outline', to: '/visit', permissionKey: "readVisits" },
+      ],
+      audits: [
+        { title: 'List', icon: 'mdi-view-list-outline', to: '/audit', permissionKey: "readAudits" },
       ]
     }),
     methods: {

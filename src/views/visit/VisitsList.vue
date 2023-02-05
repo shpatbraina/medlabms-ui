@@ -53,8 +53,11 @@ export default {
         {text: 'Actions', value: 'actions', sortable: false}
       ],
       filterableHeaders: [
-        {text: 'None', value: 'none', align: 'start', active: false},
-        {text: 'Patient', value: 'patientId', hValue: 'patientName', active: true},
+        {text: 'None', value: 'none', disabled: false, active: false, align: 'start'},
+        {text: 'Patient', value: 'patientId', hValue: 'patientName', sortable: true, disabled: false, active: true},
+        {text: 'Id', value: 'id', hValue: 'id', sortable: true, disabled: true},
+        {text: 'DateOfVisit', value: 'dateOfVisit', hValue: 'dateOfVisit', sortable: true, disabled: true},
+        {text: 'TotalPrice', value: 'totalPrice', hValue: 'totalPrice', sortable: true, disabled: true},
       ]
     }
   },

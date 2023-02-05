@@ -43,7 +43,7 @@ export default {
   name: 'BarMenu',
   data: () => ({
     menus: [
-      { title: 'Account Settings', icon: 'mdi-account-cog-outline', to: '/about'},
+      { title: 'Change Password', icon: 'mdi-account-cog-outline', to: '/change-password'},
       { title: 'Logout', icon: 'mdi-logout', to: '/logout' },
     ]
   })

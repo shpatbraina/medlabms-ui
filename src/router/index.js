@@ -73,6 +73,14 @@ const routes = [
     component: () => import('../views/user/UsersList.vue')
   },
   {
+    path: '/change-password',
+    name: 'Change Password',
+    meta: {
+      permissions: ['addSelf']
+    },
+    component: () => import('../views/user/ChangePassword.vue')
+  },
+  {
     path: '/patients/add',
     name: 'AddPatient',
     meta: {
@@ -167,6 +175,14 @@ const routes = [
       permissions: ['readVisits']
     },
     component: () => import('../views/visit/VisitsList.vue')
+  },
+  {
+    path: '/audit',
+    name: 'Audits',
+    meta: {
+      permissions: ['readAudits']
+    },
+    component: () => import('../views/audit/AuditsList.vue')
   }
 ]
 
