@@ -101,7 +101,7 @@ export default {
             this.showAlert("Patient deleted successfully!");
           })
           .catch(error => {
-            console.log(error);
+            this.showErrorAlert(error.response.data.errorMessage);
           });
     },
     showAlert(message) {

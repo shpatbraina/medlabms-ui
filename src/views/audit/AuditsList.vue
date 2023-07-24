@@ -5,8 +5,7 @@
                  :headers="headers"
                  :page-name="pageName"
                  :filterable-headers="filterableHeaders"
-                 :select-input="selectInput"
-                 :select-input-values="patients"
+                 :format-date-time="formatDateTime"
       />
     </v-container>
   </div>
@@ -25,8 +24,6 @@ export default {
       errorAlert: false,
       message: "",
       pageName: 'Audit',
-      selectInput: "patientId",
-      patients: [],
       headers: [
         {text: 'Id', value: 'id', align: 'start'},
         {text: 'Type', value: 'type'},
@@ -37,12 +34,9 @@ export default {
       ],
       filterableHeaders: [
         {text: 'None', value: 'none', disabled: false, active: false, align: 'start'},
-        {text: 'Id', value: 'id', hValue: 'id', sortable: true, disabled: false, active: true},
-        {text: 'Type', value: 'type', hValue: 'type', sortable: true, disabled: true},
-        {text: 'Action', value: 'action', hValue: 'action', sortable: true, disabled: true},
-        {text: 'Description', value: 'description', hValue: 'description', sortable: false, disabled: true},
-        {text: 'Modified by', value: 'modifiedBy', hValue: 'modifiedBy', sortable: true, disabled: true},
-        {text: 'Date of change', value: 'date', hValue: 'date', sortable: true, disabled: true},
+        {text: 'Type', value: 'type', hValue: 'type', sortable: true, disabled: false, active: true},
+        {text: 'Action', value: 'action', hValue: 'action', sortable: true, disabled: false, active: true},
+        {text: 'Modified by', value: 'modifiedBy', hValue: 'modifiedBy', sortable: true, disabled: false, active: true}
       ]
     }
   },
@@ -63,10 +57,10 @@ export default {
               search
           );
     },
-    formatDate(date) {
+    formatDateTime(date) {
       if (!date) return null
 
-      const [year, month, day] = date.split('-')
+      const [year, month, day] = date;
       return `${day}/${month}/${year}`
     },
   },

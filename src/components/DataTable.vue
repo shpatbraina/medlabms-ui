@@ -87,6 +87,7 @@ export default {
       totalRows: 0,
       totalPages: 0,
       totalElements: 0,
+      totalSize: 0,
       select: null,
       selectValue: null,
       active: false,
@@ -131,6 +132,7 @@ export default {
     readDataFromAPI() {
       this.loading = true;
       this.sortData().then(data => {
+        console.log(data);
         this.data = data.items
         this.totalRows = data.totalRows
         this.totalPages = data.totalPages
@@ -150,7 +152,11 @@ export default {
               //Then injecting the result to datatable parameters.
               this.loading = false;
               items = response.data.content;
-              const totalRows = response.data.totalElements;
+              let totalRows;
+              if(response.data.totalSize)
+                totalRows = response.data.totalSize;
+              else if(response.data.totalElements)
+                totalRows = response.data.totalElements;
               const totalPages = response.data.totalPages;
 
               if (sortBy.length === 1 && sortDesc.length === 1) {
@@ -188,13 +194,11 @@ export default {
         this.itemToDelete = '';
       });
     },
-    formatDateTime(date) {
+    formatDate(date) {
       if (!date) return null
 
       const [year, month, day] = date.split('-')
-      const [d, time] = day.split('T')
-      const [hour, minutes, seconds] = time.split(':')
-      return `${d}/${month}/${year} ${hour}:${minutes}`
+      return `${day}/${month}/${year}`
     },
   },
   props: {
@@ -256,6 +260,17 @@ export default {
       type: String,
       default(e) {
         console.log('Please override this string!')
+      }
+    },
+    formatDateTime: {
+      type: Function,
+      default(e) {
+          if (!e) return null;
+
+          const [year, month, day] = e.split('-');
+          const [d, time] = day.split('T');
+          const [hour, minutes, seconds] = time.split(':');
+          return `${day}/${month}/${year} ${hour}:${minutes}`;
       }
     }
   }
