@@ -6,7 +6,7 @@
         transition="fade-transition"
         :value="alert"
         class="pa-6 mx-2">
-      {{message}}
+      {{ message }}
     </v-alert>
     <v-alert
         elevation="20"
@@ -14,7 +14,7 @@
         transition="fade-transition"
         :value="errorAlert"
         class="pa-6 mx-2">
-      {{message}}
+      {{ message }}
     </v-alert>
     <v-container>
       <Datatable :fetch-data="fetchData"
@@ -30,7 +30,7 @@
 
 <script>
 import axios from 'axios'
-import Datatable from "@/components/DataTable";
+import Datatable from "@/views/core/components/DataTable";
 
 export default {
   name: 'ListPatient',
@@ -73,19 +73,16 @@ export default {
     fetchData(itemsPerPage, pageNumber, sortBy, sortDesc, select, search) {
       let searchVal = search !== null ? search : '';
       return axios
-          .get("http://localhost:8081/patients?size=" +
-              itemsPerPage +
-              "&page=" +
-              pageNumber +
-              "&sortBy=" +
-              sortBy +
-              "&sortDesc=" +
-              sortDesc +
-              "&filterBy=" +
-              select +
-              "&search=" +
-              searchVal
-          );
+          .get("http://localhost:8081/patients", {
+            params: {
+              "size": itemsPerPage,
+              "page": pageNumber,
+              "sortBy": sortBy,
+              "sortDesc": sortDesc,
+              "filterBy": select,
+              "search": searchVal
+            }
+          });
     },
     editData(item) {
       this.$router.push({

@@ -5,11 +5,36 @@
       width="300"
   >
     <v-list>
-      <v-list-item>
-        <v-img src="/Logo.png" :max-height="64" ></v-img>
-      </v-list-item>
+        <template v-if="readGroups">
+          <v-list-item
+              @click="navigateTo('/dashboard')">
+            <v-img src="/Logo.png" :max-height="64"></v-img>
+          </v-list-item>
+        </template>
+        <template v-else>
+          <v-list-item>
+            <v-img src="/Logo.png" :max-height="64"></v-img>
+          </v-list-item>
+        </template>
+<!--        <v-img src="/Logo.png" :max-height="64" ></v-img>-->
 
       <v-divider></v-divider>
+
+      <v-list-item
+          v-for="board in dashboard"
+          :key="board.title"
+          @click="navigateTo(board.to)"
+          v-can=board.permissionKey
+          link
+      >
+
+        <v-list-item-icon>
+          <v-icon v-text="board.icon"></v-icon>
+        </v-list-item-icon>
+
+        <v-list-item-title v-text="board.title"></v-list-item-title>
+
+      </v-list-item>
 
       <v-list-group
           prepend-icon="mdi-account-group-outline"
@@ -152,7 +177,7 @@
       </v-list-group>
 
       <v-list-group
-          prepend-icon="medical-icon-i-administration"
+          prepend-icon="medical-icon-i-immunizations"
           v-can="readVisits"
       >
         <template v-slot:activator>
@@ -216,6 +241,7 @@
   export default {
     name: 'SideMenu',
     data: () => ({
+      readDashboard: "readDashboard",
       readGroups: "readGroups",
       readUsers: "readUsers",
       readPatients: "readPatients",
@@ -223,6 +249,9 @@
       readAnalyses: "readAnalyses",
       readVisits: "readVisits",
       readAudits: "readAudits",
+      dashboard: [
+        { title: 'Dashboard', icon: 'medical-icon-i-medical-library', to: '/dashboard', permissionKey: "readDashboard" },
+      ],
       groups: [
         { title: 'Add', icon: 'mdi-plus-outline', to: '/groups/add', permissionKey: "addGroups" },
         { title: 'List', icon: 'mdi-view-list-outline', to: '/groups', permissionKey: "readGroups" },

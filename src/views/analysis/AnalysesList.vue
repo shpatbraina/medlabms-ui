@@ -32,7 +32,7 @@
 
 <script>
 import axios from 'axios'
-import Datatable from "@/components/DataTable";
+import Datatable from "@/views/core/components/DataTable";
 
 export default {
   name: 'ListAnalyses',
@@ -58,7 +58,14 @@ export default {
       filterableHeaders: [
         {text: 'None', value: 'none', disabled: false, active: false, align: 'start'},
         {text: 'Name', value: 'name', hValue: 'name', sortable: true, disabled: false, active: true},
-        {text: 'Group', value: 'analysisGroupId', hValue: 'analysisGroupName', sortable: true, disabled: false, active: true},
+        {
+          text: 'Group',
+          value: 'analysisGroupId',
+          hValue: 'analysisGroupName',
+          sortable: true,
+          disabled: false,
+          active: true
+        },
         {text: 'Id', value: 'id', hValue: 'id', sortable: true, disabled: true},
         {text: 'Description', value: 'description', hValue: 'description', sortable: true, disabled: true},
         {text: 'Metric ranges', value: 'metricRange', hValue: 'metricRange', sortable: true, disabled: true},
@@ -71,19 +78,16 @@ export default {
     fetchData(itemsPerPage, pageNumber, sortBy, sortDesc, select, search) {
       let searchVal = search !== null ? search : '';
       return axios
-          .get("http://localhost:8081/analyses?size=" +
-              itemsPerPage +
-              "&page=" +
-              pageNumber +
-              "&sortBy=" +
-              sortBy +
-              "&sortDesc=" +
-              sortDesc +
-              "&filterBy=" +
-              select +
-              "&search=" +
-              searchVal
-          );
+          .get("http://localhost:8081/analyses", {
+            params: {
+              "size": itemsPerPage,
+              "page": pageNumber,
+              "sortBy": sortBy,
+              "sortDesc": sortDesc,
+              "filterBy": select,
+              "search": searchVal
+            }
+          });
     },
     fetchGroups() {
       axios

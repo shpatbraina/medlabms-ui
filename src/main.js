@@ -3,7 +3,7 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import vuetify from './plugins/vuetify'
-import * as Keycloak from 'keycloak-js'
+import Keycloak from 'keycloak-js'
 import VueLogger from 'vuejs-logger'
 import './assets/css/wfmi-style.css'
 
@@ -23,7 +23,7 @@ let perms = {
 if (currentHostname.indexOf('localhost') > -1) {
   urls = {
     api: 'http://localhost:8082',
-    login: 'http://localhost:8180/auth',
+    login: 'http://localhost:8180/',
     cns: 'http://localhost:8081' // Verify the shown ports
   }
   store.commit("setAPIAndLogin", urls);
@@ -31,7 +31,7 @@ if (currentHostname.indexOf('localhost') > -1) {
 else {
   let keycloakUrl = window.VUE_APP_KEYCLOAK;
   let webapiUrl = window.VUE_APP_WEBAPI;
-  let cnsRedirectUrl = 'https://' + currentHostname + window.VUE_APP_ROOT; // logout
+  let cnsRedirectUrl = 'http://' + currentHostname + window.VUE_APP_ROOT; // logout
   urls = {
     api: webapiUrl,
     login: keycloakUrl,
@@ -44,7 +44,7 @@ let initOptions = {
   url: store.state.endpoints.login, realm: 'MedLabMS', clientId: 'ui-client', onLoad: 'login-required'
 }
 
-let keycloak = Keycloak(initOptions);
+let keycloak = new Keycloak(initOptions);
 Vue.prototype.$keycloak = keycloak;
 
 keycloak.init({ onLoad: initOptions.onLoad }).then((auth) => {

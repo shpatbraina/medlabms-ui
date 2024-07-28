@@ -17,8 +17,8 @@
 </template>
 
 <script>
-import SideMenu from "@/components/SideMenu";
-import BarMenu from "@/components/BarMenu";
+import SideMenu from "@/views/core/components/SideMenu";
+import BarMenu from "@/views/core/components/BarMenu";
 import axios from "axios";
 import Vue from "vue";
 import store from "./store";

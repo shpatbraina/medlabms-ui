@@ -28,7 +28,7 @@
 
 <script>
 import axios from 'axios'
-import Datatable from "@/components/DataTable";
+import Datatable from "@/views/core/components/DataTable";
 
 export default {
   name: 'ListGroup',
@@ -57,19 +57,16 @@ export default {
     fetchData(itemsPerPage, pageNumber, sortBy, sortDesc, select, search) {
       let searchVal = search !== null ? search : '';
       return axios
-          .get("http://localhost:8081/groups?size=" +
-              itemsPerPage +
-              "&page=" +
-              pageNumber +
-              "&sortBy=" +
-              sortBy +
-              "&sortDesc=" +
-              sortDesc +
-              "&filterBy=" +
-              select +
-              "&search=" +
-              searchVal
-          );
+          .get("http://localhost:8081/groups", {
+            params: {
+              "size": itemsPerPage,
+              "page": pageNumber,
+              "sortBy": sortBy,
+              "sortDesc": sortDesc,
+              "filterBy": select,
+              "search": searchVal
+            }
+          });
     },
     editData(item) {
       this.$router.push({

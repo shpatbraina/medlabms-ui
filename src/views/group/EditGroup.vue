@@ -92,6 +92,9 @@ export default {
     this.item = this.$route.params.item;
     this.groupId = this.item.id;
     this.groupName = this.item.name;
+
+    console.log("item");
+    console.log(this.item);
     this.fetchAvailablePermissions(this.item.id);
   },
   methods: {

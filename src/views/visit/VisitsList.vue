@@ -32,7 +32,7 @@
 
 <script>
 import axios from 'axios'
-import Datatable from "@/components/DataTable";
+import Datatable from "@/views/core/components/DataTable";
 
 export default {
   name: 'ListVisits',
@@ -64,19 +64,16 @@ export default {
   methods: {
     fetchData(itemsPerPage, pageNumber, sortBy, sortDesc, select, search) {
       return axios
-          .get("http://localhost:8081/visits?size=" +
-              itemsPerPage +
-              "&page=" +
-              pageNumber +
-              "&sortBy=" +
-              sortBy +
-              "&sortDesc=" +
-              sortDesc +
-              "&filterBy=" +
-              select +
-              "&search=" +
-              search
-          );
+          .get("http://localhost:8081/visits", {
+            params: {
+              "size": itemsPerPage,
+              "page": pageNumber,
+              "sortBy": sortBy,
+              "sortDesc": sortDesc,
+              "filterBy": select,
+              "search": search
+            }
+          });
     },
     fetchPatients() {
       axios

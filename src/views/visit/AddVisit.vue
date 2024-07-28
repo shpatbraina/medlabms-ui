@@ -94,7 +94,7 @@
 <script>
 
 import axios from "axios";
-import VisitAnalyses from "@/components/VisitAnalyses";
+import VisitAnalyses from "@/views/visit/components/VisitAnalyses.vue";
 
 export default {
   name: 'AddVisit',

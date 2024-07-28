@@ -49,6 +49,14 @@ const routes = [
     component: () => import('../views/group/GroupsList.vue')
   },
   {
+    path: '/dashboard',
+    name: 'Dashboard',
+    meta: {
+      permissions: ['readDashboard']
+    },
+    component: () => import('../views/dashboard/Dashboard.vue')
+  },
+  {
     path: '/users/add',
     name: 'AddUser',
     meta: {

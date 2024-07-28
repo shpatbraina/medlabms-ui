@@ -13,7 +13,7 @@
 
 <script>
 import axios from 'axios'
-import Datatable from "@/components/DataTable";
+import Datatable from "@/views/core/components/DataTable";
 
 export default {
   name: 'ListAudits',
@@ -43,25 +43,21 @@ export default {
   methods: {
     fetchData(itemsPerPage, pageNumber, sortBy, sortDesc, select, search) {
       return axios
-          .get("http://localhost:8081/audits?size=" +
-              itemsPerPage +
-              "&page=" +
-              pageNumber +
-              "&sortBy=" +
-              sortBy +
-              "&sortDesc=" +
-              sortDesc +
-              "&filterBy=" +
-              select +
-              "&search=" +
-              search
-          );
+          .get("http://localhost:8081/audits", {
+            params: {
+              "size": itemsPerPage,
+              "page": pageNumber,
+              "sortBy": sortBy,
+              "sortDesc": sortDesc,
+              "filterBy": select,
+              "search": search
+            }
+          });
     },
     formatDateTime(date) {
-      if (!date) return null
-
-      const [year, month, day] = date;
-      return `${day}/${month}/${year}`
+      if (!date) return null;
+      const d = new Date(date);
+      return `${d.toLocaleDateString()} ${d.toLocaleTimeString({}, {hour12:false})}`;
     },
   },
   created() {

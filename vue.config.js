@@ -1,6 +1,7 @@
 module.exports = {
   transpileDependencies: [
-    'vuetify'
+    'vuetify',
+    'keycloak-js' // Add 'keycloak-js' here if it's not being transpiled correctly by default
   ],
   chainWebpack: config => {
     config
