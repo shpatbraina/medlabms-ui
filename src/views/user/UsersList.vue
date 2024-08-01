@@ -32,7 +32,7 @@
 
 <script>
 import axios from 'axios'
-import Datatable from "@/views/core/components/DataTable";
+import Datatable from "@/components/DataTable";
 
 export default {
   name: 'ListUser',
