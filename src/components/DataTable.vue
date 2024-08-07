@@ -13,7 +13,7 @@
             :item-value="item=>item"
             label="Filter"
             required
-            @change=""
+            @change="onSelectionChange"
         ></v-select>
         <v-spacer class="mx-6"></v-spacer>
         <v-select
@@ -55,8 +55,13 @@
       <template v-slot:[`item.date`]="{ item }">
         <span>{{ formatDateTime(item.date) }}</span>
       </template>
+      <template v-slot:[`item.paid`]="{ item }">
+        <v-chip v-if="item.paid" variant="elevated" class="success white--text" style="width: 75px; justify-content: center">PAID</v-chip>
+        <v-chip v-else variant="elevated" class="red white--text" style="width: 75px; justify-content: center">UNPAID</v-chip>
+      </template>
       <template v-slot:[`item.actions`]="{ item }">
-          <v-icon v-if="resetPasswordAction" small class="mr-2" @click="resetPassword(item)">mdi-lock-reset</v-icon>
+        <v-icon v-if="item.paid != null" small class="mr-2" @click="markPaid(item)">mdi-wallet</v-icon>
+        <v-icon v-if="resetPasswordAction" small class="mr-2" @click="resetPassword(item)">mdi-lock-reset</v-icon>
         <v-icon small class="mr-2" @click="editData(item)">mdi-pencil</v-icon>
         <v-icon small @click="openDeleteDialog(item)">mdi-delete</v-icon>
       </template>
@@ -132,7 +137,6 @@ export default {
     readDataFromAPI() {
       this.loading = true;
       this.sortData().then(data => {
-        console.log(data);
         this.data = data.items
         this.totalRows = data.totalRows
         this.totalPages = data.totalPages
@@ -208,6 +212,12 @@ export default {
         console.log('Please override this method!')
       }
     },
+    markPaid: {
+      type: Function,
+      default(e) {
+        console.log('Please override this method for mark paid!')
+      }
+    },
     resetPassword: {
       type: Function,
       default(e) {
@@ -240,6 +250,12 @@ export default {
     },
     filterableHeaders: {
       type: Array,
+      default(e) {
+        console.log('Please override this array!')
+      }
+    },
+    onSelectionChange: {
+      type: Function,
       default(e) {
         console.log('Please override this array!')
       }

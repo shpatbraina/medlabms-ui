@@ -126,7 +126,6 @@ export default {
   },
   methods: {
     submit() {
-      console.log(this.selectedAnalyses);
       if (this.$refs.form.validate()) {
         let data = {
           "patientId": this.patientSelect,

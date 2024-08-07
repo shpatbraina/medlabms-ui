@@ -92,12 +92,16 @@ export default {
       analysesGroupsCount: 0,
       analysesCount: 0,
       visitsCount: 0,
+      paidCount: 0,
+      unpaidCount: 0,
+      totalPaidPriceCount: 0,
+      totalUnpaidPriceCount: 0,
       paidVisitsData: {
         labels: ['Paid', 'Unpaid'],
         datasets: [
           {
-            data: [65, 35], // Example data
-            backgroundColor: ['#42A5F5', '#FF6384']
+            data: [0, 0],
+            backgroundColor: ['#0db30f', '#df0331']
           }
         ]
       },
@@ -105,8 +109,8 @@ export default {
         labels: ['Total paid', 'Total unpaid'],
         datasets: [
           {
-            data: [30, 70], // Example data
-            backgroundColor: ['#42A5F5', '#FF6384']
+            data: [0, 0],
+            backgroundColor: ['#0db30f', '#df0331']
           }
         ]
       }
@@ -121,6 +125,8 @@ export default {
       this.analysesGroupsCount = response.data.analysesGroupsCount;
       this.analysesCount = response.data.analysesCount;
       this.visitsCount = response.data.visitsCount;
+      this.paidVisitsData.datasets[0].data = [response.data.paidCount, response.data.unpaidCount];
+      this.totalDebtData.datasets[0].data = [response.data.totalPaidPriceCount, response.data.totalUnpaidPriceCount];
     });
   },
   methods: {

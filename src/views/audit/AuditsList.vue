@@ -52,6 +52,15 @@ export default {
               "filterBy": select,
               "search": search
             }
+          }).then(value => {
+            value.data.content.forEach(item => {
+              if(item.action === "VISIT_MARKED_AS_PAID") {
+                item.action = "Marked as Paid";
+              } else if(item.action === "VISIT_MARKED_AS_UNPAID") {
+                item.action = "Marked as Unpaid";
+              }
+            });
+            return value;
           });
     },
     formatDateTime(date) {

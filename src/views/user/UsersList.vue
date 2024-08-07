@@ -96,7 +96,6 @@ export default {
       });
     },
     resetPassword(item) {
-      console.log(item);
       return axios
           .put("http://localhost:8081/users/resetPassword/" + item.id).then(response => {
             this.showAlert("User password reset successfully!");

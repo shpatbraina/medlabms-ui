@@ -93,8 +93,6 @@ export default {
     this.groupId = this.item.id;
     this.groupName = this.item.name;
 
-    console.log("item");
-    console.log(this.item);
     this.fetchAvailablePermissions(this.item.id);
   },
   methods: {

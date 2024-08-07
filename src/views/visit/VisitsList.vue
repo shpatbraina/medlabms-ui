@@ -17,14 +17,16 @@
       {{ message }}
     </v-alert>
     <v-container>
-      <Datatable :fetch-data="fetchData"
+      <Datatable :fetchData="fetchData"
                  :editData="editData"
                  :deleteData="deleteData"
+                 :onSelectionChange="onSelectionChange"
+                 :markPaid="markPaid"
                  :headers="headers"
                  :page-name="pageName"
                  :filterable-headers="filterableHeaders"
                  :select-input="selectInput"
-                 :select-input-values="patients"
+                 :select-input-values="selectData"
       />
     </v-container>
   </div>
@@ -44,12 +46,13 @@ export default {
       message: "",
       pageName: 'Visits',
       selectInput: "patientId",
-      patients: [],
+      selectData: [],
       headers: [
         {text: 'Id', value: 'id', align: 'start'},
         {text: 'Patient', value: 'patientName'},
         {text: 'Date of visit', value: 'dateOfVisit'},
         {text: 'Total price', value: 'totalPrice'},
+        {text: 'Paid', value: 'paid'},
         {text: 'Actions', value: 'actions', sortable: false}
       ],
       filterableHeaders: [
@@ -58,6 +61,7 @@ export default {
         {text: 'Id', value: 'id', hValue: 'id', sortable: true, disabled: true},
         {text: 'DateOfVisit', value: 'dateOfVisit', hValue: 'dateOfVisit', sortable: true, disabled: true},
         {text: 'TotalPrice', value: 'totalPrice', hValue: 'totalPrice', sortable: true, disabled: true},
+        {text: 'Paid', value: 'paid', hValue: 'paid', sortable: true, disabled: false, active: true},
       ]
     }
   },
@@ -85,9 +89,30 @@ export default {
             "text": value.fullName,
             "value": value.id
           };
-          this.patients.push(temp);
+          this.selectData.push(temp);
         });
       });
+    },
+    markPaid(item) {
+      if(item.paid) {
+        return axios
+            .put("http://localhost:8081/visits/mark-as-unpaid/" + item.id).then(response => {
+              this.showAlert("Visit marked as not paid successfully!");
+              item.paid = !item.paid;
+            })
+            .catch(error => {
+              this.showErrorAlert(error.response.data.errorMessage);
+            });
+      } else {
+        return axios
+            .put("http://localhost:8081/visits/mark-as-paid/" + item.id).then(response => {
+              this.showAlert("Visit marked as paid successfully!");
+              item.paid = !item.paid;
+            })
+            .catch(error => {
+              this.showErrorAlert(error.response.data.errorMessage);
+            });
+      }
     },
     editData(item) {
       this.$router.push({
@@ -105,6 +130,26 @@ export default {
           .catch(error => {
             this.showErrorAlert(error.response.data.errorMessage);
           });
+    },
+    onSelectionChange(selection) {
+      if(selection.value === "patientId") {
+        this.selectInput = "patientId";
+        this.selectData = [];
+        this.fetchPatients();
+      }
+      else if(selection.value === "paid") {
+        this.selectInput = "paid";
+          let paid = {
+            "text": "Paid",
+            "value": "true"
+          };
+          let unpaid = {
+            "text": "Unpaid",
+            "value": "false"
+          };
+          this.selectData = [];
+          this.selectData.push(paid, unpaid);
+      }
     },
     showAlert(message) {
       this.alert = true;
