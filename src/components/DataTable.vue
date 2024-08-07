@@ -106,7 +106,9 @@ export default {
         'show-first-last-page': true,
       },
       options: {
-        page: 1
+        page: 1,
+        sortBy: ['id'],
+        sortDesc: [false]
       },
       pagination: {},
       search: '',
@@ -163,17 +165,6 @@ export default {
                 totalRows = response.data.totalElements;
               const totalPages = response.data.totalPages;
 
-              if (sortBy.length === 1 && sortDesc.length === 1) {
-                items = items.sort((a, b) => {
-                  const sortA = a[sortBy[0]]
-                  const sortB = b[sortBy[0]]
-                  if (sortDesc[0]) {
-                    return sortB.toString().toLowerCase().localeCompare(sortA.toString().toLowerCase());
-                  } else {
-                    return sortA.toString().toLowerCase().localeCompare(sortB.toString().toLowerCase());
-                  }
-                })
-              }
               this.loading = false
               resolve({
                 items,

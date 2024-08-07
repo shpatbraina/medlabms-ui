@@ -51,7 +51,6 @@ keycloak.init({ onLoad: initOptions.onLoad }).then((auth) => {
   if (!auth) {
     window.location.reload();
   }
-  Vue.$log.info("Authenticated");
 
   new Vue({
     router,
