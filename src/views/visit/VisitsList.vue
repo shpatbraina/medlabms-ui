@@ -22,6 +22,7 @@
                  :deleteData="deleteData"
                  :onSelectionChange="onSelectionChange"
                  :markPaid="markPaid"
+                 :exportPdf="exportPdf"
                  :headers="headers"
                  :page-name="pageName"
                  :filterable-headers="filterableHeaders"
@@ -112,6 +113,56 @@ export default {
             .catch(error => {
               this.showErrorAlert(error.response.data.errorMessage);
             });
+      }
+    },
+    exportPdf(item) {
+      if(item.paid) {
+        axios
+            .get("http://localhost:8081/visits/export-pdf/" + item.id, {
+              responseType: "blob" // Important for handling binary data
+            })
+            .then(response => {
+              // Create a blob from the PDF stream
+              const blob = new Blob([response.data], {type: "application/pdf"});
+
+              // Create a link element
+              const link = document.createElement("a");
+
+              // Set the download filename and URL
+              link.href = window.URL.createObjectURL(blob);
+
+              const disposition = response.headers["content-disposition"];
+
+              let filename = "visit.pdf"; // default fallback
+
+              if (disposition && disposition.includes("filename=")) {
+                const match = disposition.match(/filename="?([^"]+)"?/);
+                if (match && match[1]) {
+                  filename = match[1];
+                }
+              }
+
+              link.download = filename;
+
+              // Append link to body
+              document.body.appendChild(link);
+
+              // Trigger click to download
+              link.click();
+
+              // Clean up
+              document.body.removeChild(link);
+              window.URL.revokeObjectURL(link.href);
+
+              this.showAlert("Pdf for visit exported successfully!");
+            })
+            .catch(error => {
+              const errorMsg = error?.response?.data?.errorMessage || "Failed to export PDF.";
+              this.showErrorAlert(errorMsg);
+              console.error(error);
+            });
+      }else {
+        this.showErrorAlert("Visit should be paid to download report.");
       }
     },
     editData(item) {

@@ -61,6 +61,7 @@
       </template>
       <template v-slot:[`item.actions`]="{ item }">
         <v-icon v-if="item.paid != null" small class="mr-2" @click="markPaid(item)">mdi-wallet</v-icon>
+        <v-icon small class="mr-2" @click="exportPdf(item)">mdi-file-export</v-icon>
         <v-icon v-if="resetPasswordAction" small class="mr-2" @click="resetPassword(item)">mdi-lock-reset</v-icon>
         <v-icon small class="mr-2" @click="editData(item)">mdi-pencil</v-icon>
         <v-icon small @click="openDeleteDialog(item)">mdi-delete</v-icon>
@@ -207,6 +208,12 @@ export default {
       type: Function,
       default(e) {
         console.log('Please override this method for mark paid!')
+      }
+    },
+    exportPdf: {
+      type: Function,
+      default(e) {
+        console.log('Please override this method for export pdf!')
       }
     },
     resetPassword: {
